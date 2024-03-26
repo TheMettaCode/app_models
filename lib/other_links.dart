@@ -40,10 +40,15 @@ class OLFunctions {
             .where((element) => element.isApp)
             .toList();
 
-        GithubOtherLinks? thisApplication = githubOtherLinks
-            .firstWhere((element) => element.nameTag == applicationNameTag);
+        GithubOtherLinks? thisApplication;
 
-        // githubOtherLinksNotifier.value = githubOtherLinks;
+        try {
+          thisApplication = githubOtherLinks
+              .firstWhere((element) => element.nameTag == applicationNameTag);
+        } catch (e) {
+          log.e(
+              '[GITHUB OTHER LINKS API] ERROR: THIS APPLICATION ($applicationNameTag) WAS NOT FOUND!!');
+        }
 
         githubOLApplications = GithubOLApplications(
             allData: githubOtherLinks
@@ -55,7 +60,7 @@ class OLFunctions {
 
         // return githubOtherLinks;
       } else {
-        log.d(
+        log.e(
             '[GITHUB OTHER LINKS API] GITHUB OTHER LINKS API CALL ERROR WITH RESPONSE CODE: ${response.statusCode}');
         // return []; // githubNotificationsPlaceholder;
       }
