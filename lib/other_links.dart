@@ -33,28 +33,30 @@ class OLFunctions {
       if (response.statusCode == 200) {
         GithubOtherLinksData githubOtherLinksData =
             githubOtherLinksFromJson(response.body);
-        log.d('[GITHUB OTHER LINKS API] NEW GITHUB LINKS RETRIEVED');
+        log.d('[GITHUB OTHER LINKS API] GITHUB LINKS RETRIEVED');
 
-        List<GithubOtherLinks> githubOtherLinks = githubOtherLinksData
-            .otherLinks
+        List<GithubOtherLinks> applications = githubOtherLinksData.otherLinks
             .where((element) => element.isApp)
             .toList();
 
+        log.d('[GITHUB OTHER LINKS API]  RETRIEVED');
+
         GithubOtherLinks? thisApplication;
 
-        if (githubOtherLinks
-            .any((element) => element.nameTag == applicationNameTag)) {
-          try {
-            thisApplication = githubOtherLinks
-                .firstWhere((element) => element.nameTag == applicationNameTag);
-          } catch (e) {
-            log.e(
-                '[GITHUB OTHER LINKS API] ERROR: THIS APPLICATION ($applicationNameTag) WAS NOT FOUND!!');
-          }
+        if (applications.isNotEmpty &&
+            applications
+                .any((element) => element.nameTag == applicationNameTag)) {
+          thisApplication = applications
+              .firstWhere((element) => element.nameTag == applicationNameTag);
+          log.w(
+              '[GITHUB OTHER LINKS API] ERROR: THIS APPLICATION ($applicationNameTag) FOUND!!');
+        } else {
+          log.e(
+              '[GITHUB OTHER LINKS API] ERROR: THIS APPLICATION ($applicationNameTag) IS NOT AN APP OR DOES NOT EXIST');
         }
 
         githubOLApplications = GithubOLApplications(
-            allData: githubOtherLinks
+            allData: applications
                 .where((element) => element.nameTag != applicationNameTag)
                 .toList(),
             thisApplication: thisApplication);
