@@ -12,7 +12,7 @@ const String otherLinksEndpoint = "other-links.json";
 ValueNotifier<GithubOLApplications> githubApplicationsNotifier =
     ValueNotifier(GithubOLApplications(allData: [], thisApplication: null));
 
-class Functions {
+class OLFunctions {
   static Future<GithubOLApplications> getOtherLinks(
       BuildContext context, String applicationNameTag) async {
     GithubOLApplications githubOLApplications =
