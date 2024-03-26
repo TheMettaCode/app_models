@@ -14,7 +14,8 @@ ValueNotifier<GithubOLApplications> githubApplicationsNotifier =
 
 class OLFunctions {
   static Future<GithubOLApplications> getOtherLinks(
-      BuildContext context, String applicationNameTag) async {
+      {required BuildContext context,
+      required String applicationNameTag}) async {
     GithubOLApplications githubOLApplications =
         GithubOLApplications(allData: [], thisApplication: null);
     try {
