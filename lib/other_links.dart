@@ -1,8 +1,99 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
+
+const int apiResponseTimeoutSeconds = 15;
+final Logger log = Logger();
+const String otherLinksEndpoint = "other-links.json";
+
+/// GITHUB DATA
+ValueNotifier<GithubOLApplications> githubApplicationsNotifier =
+    ValueNotifier(GithubOLApplications(allData: [], thisApplication: null));
+
+class Functions {
+  static Future<GithubOLApplications> getOtherLinks(
+      BuildContext context, String applicationNameTag) async {
+    GithubOLApplications githubOLApplications =
+        GithubOLApplications(allData: [], thisApplication: null);
+    try {
+      final Map<String, String> headers = {"Accept": "application/json"};
+      final response = await http
+          .get(
+              Uri.parse(
+                  "https://themettacode.github.io/mettacode-app-data-api/$otherLinksEndpoint"),
+              headers: headers)
+          .timeout(const Duration(seconds: apiResponseTimeoutSeconds));
+      log.d(
+          '[GITHUB OTHER LINKS API] GITHUB MSG API RESPONSE CODE: ${response.statusCode} *****');
+      if (response.statusCode == 200) {
+        GithubOtherLinksData githubOtherLinksData =
+            githubOtherLinksFromJson(response.body);
+        log.d('[GITHUB OTHER LINKS API] NEW GITHUB LINKS RETRIEVED');
+
+        List<GithubOtherLinks> githubOtherLinks = githubOtherLinksData
+            .otherLinks
+            .where((element) => element.isApp)
+            .toList();
+
+        GithubOtherLinks thisApplication = githubOtherLinks
+            .firstWhere((element) => element.nameTag == applicationNameTag);
+
+        // githubOtherLinksNotifier.value = githubOtherLinks;
+
+        githubOLApplications = GithubOLApplications(
+            allData: githubOtherLinks
+                .where((element) => element.nameTag != applicationNameTag)
+                .toList(),
+            thisApplication: thisApplication);
+
+        githubApplicationsNotifier.value = githubOLApplications;
+
+        // return githubOtherLinks;
+      } else {
+        log.d(
+            '[GITHUB OTHER LINKS API] GITHUB OTHER LINKS API CALL ERROR WITH RESPONSE CODE: ${response.statusCode}');
+        // return []; // githubNotificationsPlaceholder;
+      }
+    } catch (e) {
+      popMessage(
+          context,
+          '[GITHUB OTHER LINKS API] GITHUB OTHER LINKS API CALL ERROR WITH RESPONSE CODE: $e',
+          true);
+    }
+    return githubOLApplications;
+  }
+
+  static Future<void> popMessage(
+      BuildContext context, String message, bool isError,
+      {Color? color}) async {
+    log.d('[POP MESSAGE FUNCTION] GENERATING POP-UP MESSAGE *****');
+    if (message.isNotEmpty) {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        elevation: 0,
+        backgroundColor: color ?? Theme.of(context).colorScheme.error,
+        content: Padding(
+          padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            child: Text(message.toUpperCase(),
+                style: TextStyle(
+                    fontSize: 15,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontWeight: FontWeight.normal),
+                textAlign: TextAlign.center),
+          ),
+        ),
+      ));
+    }
+  }
+}
+
 // To parse this JSON data, do
 //
 //     final githubOtherLinks = githubOtherLinksFromJson(jsonString);
-
-import 'dart:convert';
 
 GithubOtherLinksData githubOtherLinksFromJson(String str) =>
     GithubOtherLinksData.fromJson(json.decode(str));
