@@ -4,14 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
+/// FUNCTION CONSTANTS
 const int apiResponseTimeoutSeconds = 15;
 final Logger log = Logger();
 const String otherLinksEndpoint = "other-links.json";
 
-/// GITHUB DATA
+/// DATA NOTIFIER
 ValueNotifier<GithubOLApplications> githubApplicationsNotifier =
     ValueNotifier(GithubOLApplications(allData: [], thisApplication: null));
 
+/// OTHER LINKS FUNCTIONS
 class OLFunctions {
   static Future<GithubOLApplications> getOtherLinks(
       {required BuildContext context,
@@ -38,7 +40,7 @@ class OLFunctions {
             .where((element) => element.isApp)
             .toList();
 
-        GithubOtherLinks thisApplication = githubOtherLinks
+        GithubOtherLinks? thisApplication = githubOtherLinks
             .firstWhere((element) => element.nameTag == applicationNameTag);
 
         // githubOtherLinksNotifier.value = githubOtherLinks;
@@ -92,6 +94,7 @@ class OLFunctions {
   }
 }
 
+/// OTHER LINKS MODEL
 // To parse this JSON data, do
 //
 //     final githubOtherLinks = githubOtherLinksFromJson(jsonString);
