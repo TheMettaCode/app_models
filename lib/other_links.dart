@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
 /// FUNCTION CONSTANTS
-const int apiResponseTimeoutSeconds = 15;
+const int otherLinksApiResponseTimeoutSeconds = 15;
 final Logger log = Logger();
 const String otherLinksEndpoint = "other-links.json";
 
@@ -27,7 +27,8 @@ class OLFunctions {
               Uri.parse(
                   "https://themettacode.github.io/mettacode-app-data-api/$otherLinksEndpoint"),
               headers: headers)
-          .timeout(const Duration(seconds: apiResponseTimeoutSeconds));
+          .timeout(
+              const Duration(seconds: otherLinksApiResponseTimeoutSeconds));
       log.d(
           '[GITHUB OTHER LINKS API] GITHUB MSG API RESPONSE CODE: ${response.statusCode} *****');
       if (response.statusCode == 200) {
