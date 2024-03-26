@@ -42,12 +42,15 @@ class OLFunctions {
 
         GithubOtherLinks? thisApplication;
 
-        try {
-          thisApplication = githubOtherLinks
-              .firstWhere((element) => element.nameTag == applicationNameTag);
-        } catch (e) {
-          log.e(
-              '[GITHUB OTHER LINKS API] ERROR: THIS APPLICATION ($applicationNameTag) WAS NOT FOUND!!');
+        if (githubOtherLinks
+            .any((element) => element.nameTag == applicationNameTag)) {
+          try {
+            thisApplication = githubOtherLinks
+                .firstWhere((element) => element.nameTag == applicationNameTag);
+          } catch (e) {
+            log.e(
+                '[GITHUB OTHER LINKS API] ERROR: THIS APPLICATION ($applicationNameTag) WAS NOT FOUND!!');
+          }
         }
 
         githubOLApplications = GithubOLApplications(
