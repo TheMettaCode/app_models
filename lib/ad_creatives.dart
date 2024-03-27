@@ -30,14 +30,13 @@ class AdCreativeFunctions {
       logger.d(
           '[GITHUB AD CREATIVES API] GITHUB ADS API RESPONSE CODE: ${response.statusCode} *****');
       if (response.statusCode == 200) {
-        AdCreativesData adCreativesData = adCreativesFromJson(response.body);
+        try {
+          AdCreativesData adCreativesData = adCreativesFromJson(response.body);
+          if (adCreativesData.status == "OK" &&
+              adCreativesData.name == adCreativesDataName) {
+            logger.d(
+                '[GITHUB AD CREATIVES API] GITHUB NOTIFIACATION DATA RETRIEVED');
 
-        if (adCreativesData.status == "OK" &&
-            adCreativesData.name == adCreativesDataName) {
-          logger.d(
-              '[GITHUB AD CREATIVES API] GITHUB NOTIFIACATION DATA RETRIEVED');
-
-          try {
             List<AdCreatives> rawGithubAdCreatives = adCreativesData.creatives;
 
             /// PRUNE AND SORT
@@ -50,13 +49,13 @@ class AdCreativeFunctions {
                 '[GITHUB AD CREATIVES API] ${sortedCreatives.length} SORTED ADS RETRIEVED');
             adCreativesNotifier.value = sortedCreatives;
             activeAdCreatives = sortedCreatives;
-          } catch (e) {
-            logger.e('[GITHUB AD CREATIVES API] GITHUB ADS API ERROR: $e');
+          } else {
+            logger.d(
+                '[GITHUB AD CREATIVES API]  GITHUB DATA ERROR: DATA APP => ${adCreativesData.name} | DATA STATUS => ${adCreativesData.status}');
+            // return [];
           }
-        } else {
-          logger.d(
-              '[GITHUB AD CREATIVES API]  GITHUB DATA ERROR: DATA APP => ${adCreativesData.name} | DATA STATUS => ${adCreativesData.status}');
-          // return [];
+        } catch (e) {
+          logger.e('[GITHUB AD CREATIVES API] GITHUB ADS API ERROR: $e');
         }
       } else {
         logger.d(
