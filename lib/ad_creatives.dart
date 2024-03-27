@@ -148,8 +148,8 @@ class AdCreatives {
     required this.applications,
     required this.markets,
     required this.locality,
-    required this.creativeUrl,
     required this.linkUrl,
+    required this.creativeUrl,
     required this.creativeHeight,
     required this.creativeWidth,
   });
@@ -165,11 +165,11 @@ class AdCreatives {
   final String? altText;
   final int frequencyPriority;
   final int? durationInDays;
-  final List<String> applications;
-  final List<String> markets;
-  final List<String> locality;
-  final String creativeUrl;
+  final List<dynamic> applications;
+  final List<dynamic> markets;
+  final List<dynamic> locality;
   final String linkUrl;
+  final String creativeUrl;
   final int? creativeHeight;
   final int? creativeWidth;
 
@@ -190,11 +190,11 @@ class AdCreatives {
         altText: json["alt_Text"] ?? "",
         frequencyPriority: json["frequency_priority"] ?? 99,
         durationInDays: json["duration_in_days"],
-        applications: List<String>.from(json["applications"].map((x) => x)),
-        markets: List<String>.from(json["markets"].map((x) => x)),
-        locality: List<String>.from(json["locality"].map((x) => x)),
-        creativeUrl: json["creative_url"],
+        applications: List<dynamic>.from(json["applications"].map((x) => x)),
+        markets: List<dynamic>.from(json["markets"].map((x) => x)),
+        locality: List<dynamic>.from(json["locality"].map((x) => x)),
         linkUrl: json["link_url"],
+        creativeUrl: json["creative_url"],
         creativeHeight: json["creative_height"],
         creativeWidth: json["creative_width"],
       );
@@ -214,8 +214,8 @@ class AdCreatives {
         "applications": List<dynamic>.from(applications.map((x) => x)),
         "markets": List<dynamic>.from(markets.map((x) => x)),
         "locality": List<dynamic>.from(locality.map((x) => x)),
-        "creative_url": creativeUrl,
         "link_url": linkUrl,
+        "creative_url": creativeUrl,
         "creative_height": creativeHeight,
         "creative_width": creativeWidth,
       };
