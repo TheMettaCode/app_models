@@ -31,6 +31,7 @@ class AdCreativeFunctions {
           '[GITHUB AD CREATIVES API] GITHUB ADS API RESPONSE CODE: ${response.statusCode} *****');
       if (response.statusCode == 200) {
         try {
+          logger.w('[GITHUB AD CREATIVES API] MAPPING RETRIEVED DATA');
           AdCreativesData adCreativesData = adCreativesFromJson(response.body);
           if (adCreativesData.status == "OK" &&
               adCreativesData.name == adCreativesDataName) {
