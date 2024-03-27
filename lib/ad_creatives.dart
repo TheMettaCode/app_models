@@ -7,7 +7,7 @@ import 'package:logger/logger.dart';
 /// FUNCTION CONSTANTS
 const int adCreativesApiResponseTimeoutSeconds = 15;
 final Logger logger = Logger();
-const String adCreativesEndpoint = "other-links.json";
+const String adCreativesEndpoint = "ad-creatives.json";
 const String adCreativesDataName = "ad_creatives";
 
 /// DATA NOTIFIER
@@ -28,7 +28,8 @@ class AdCreativeFunctions {
           .timeout(
               const Duration(seconds: adCreativesApiResponseTimeoutSeconds));
       logger.d(
-          '[GITHUB AD CREATIVES API] GITHUB ADS API RESPONSE CODE: ${response.statusCode} *****\n[GITHUB AD CREATIVES API] ${response.body}');
+          '[GITHUB AD CREATIVES API] GITHUB ADS API RESPONSE CODE: ${response.statusCode} *****');
+      // logger.d('\n[GITHUB AD CREATIVES API] ${response.body}');
       if (response.statusCode == 200) {
         try {
           logger.w('[GITHUB AD CREATIVES API] MAPPING RETRIEVED DATA');
