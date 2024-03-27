@@ -46,7 +46,7 @@ class AppAlertFunctions {
 
             logger.d(
                 '[APP ALERTS API] ${activeAlerts.length} ACTIVE NOTIFICATIONS RETRIEVED');
-
+            appAlertsNotifier.value = activeAlerts;
             finalAlertsList = activeAlerts;
           } else {
             logger.d(
