@@ -40,15 +40,15 @@ class AdCreativeFunctions {
           List<AdCreatives> rawGithubAdCreatives = adCreativesData.creatives;
 
           /// PRUNE AND SORT
-          List<AdCreatives> activeCreatives = await pruneAndSortAdCreatives(
+          List<AdCreatives> sortedCreatives = await pruneAndSortAdCreatives(
               adCreativesList: rawGithubAdCreatives,
               dateTime: now,
               appNameTag: appNameTag);
 
           logger.d(
-              '[GITHUB AD CREATIVES API] ${activeCreatives.length} ACTIVE ADS RETRIEVED');
-          adCreativesNotifier.value = activeAdCreatives;
-          activeAdCreatives = activeCreatives;
+              '[GITHUB AD CREATIVES API] ${sortedCreatives.length} SORTED ADS RETRIEVED');
+          adCreativesNotifier.value = sortedCreatives;
+          activeAdCreatives = sortedCreatives;
         } else {
           logger.d(
               '[GITHUB AD CREATIVES API]  GITHUB DATA ERROR: DATA APP => ${adCreativesData.name} | DATA STATUS => ${adCreativesData.status}');
@@ -63,7 +63,7 @@ class AdCreativeFunctions {
       throw ('[GITHUB AD CREATIVES API] GITHUB ADS API ERROR: $e');
       // return [];
     }
-    adCreativesNotifier.value = activeAdCreatives;
+    // adCreativesNotifier.value = activeAdCreatives;
     return activeAdCreatives;
   }
 
