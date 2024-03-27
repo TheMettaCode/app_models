@@ -37,18 +37,22 @@ class AdCreativeFunctions {
           logger.d(
               '[GITHUB AD CREATIVES API] GITHUB NOTIFIACATION DATA RETRIEVED');
 
-          List<AdCreatives> rawGithubAdCreatives = adCreativesData.creatives;
+          try {
+            List<AdCreatives> rawGithubAdCreatives = adCreativesData.creatives;
 
-          /// PRUNE AND SORT
-          List<AdCreatives> sortedCreatives = await pruneAndSortAdCreatives(
-              adCreativesList: rawGithubAdCreatives,
-              dateTime: now,
-              appNameTag: appNameTag);
+            /// PRUNE AND SORT
+            List<AdCreatives> sortedCreatives = await pruneAndSortAdCreatives(
+                adCreativesList: rawGithubAdCreatives,
+                dateTime: now,
+                appNameTag: appNameTag);
 
-          logger.d(
-              '[GITHUB AD CREATIVES API] ${sortedCreatives.length} SORTED ADS RETRIEVED');
-          adCreativesNotifier.value = sortedCreatives;
-          activeAdCreatives = sortedCreatives;
+            logger.d(
+                '[GITHUB AD CREATIVES API] ${sortedCreatives.length} SORTED ADS RETRIEVED');
+            adCreativesNotifier.value = sortedCreatives;
+            activeAdCreatives = sortedCreatives;
+          } catch (e) {
+            logger.e('[GITHUB AD CREATIVES API] GITHUB ADS API ERROR: $e');
+          }
         } else {
           logger.d(
               '[GITHUB AD CREATIVES API]  GITHUB DATA ERROR: DATA APP => ${adCreativesData.name} | DATA STATUS => ${adCreativesData.status}');
