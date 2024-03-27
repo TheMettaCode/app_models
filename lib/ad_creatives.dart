@@ -135,7 +135,7 @@ class AdCreativesData {
 class AdCreatives {
   AdCreatives({
     required this.clientName,
-    required this.clientId,
+    // required this.clientId,
     // required this.clientDescription,
     // required this.clientInternalNotes,
     // required this.startDate,
@@ -155,7 +155,7 @@ class AdCreatives {
   });
 
   final String clientName;
-  final dynamic clientId;
+  // final dynamic clientId;
   // final String? clientDescription;
   // final String? clientInternalNotes;
   // final DateTime startDate;
@@ -175,7 +175,7 @@ class AdCreatives {
 
   factory AdCreatives.fromJson(Map<String, dynamic> json) => AdCreatives(
         clientName: "client_name",
-        clientId: "client_id",
+        // clientId: "client_id",
         // clientDescription: "client_description",
         // clientInternalNotes: "client_internal_notes",
         // startDate: json["start_date"] == null || json["start_date"] == ""
@@ -201,7 +201,7 @@ class AdCreatives {
 
   Map<String, dynamic> toJson() => {
         "client_name": clientName,
-        "client_id": clientId,
+        // "client_id": clientId,
         // "client_description": clientDescription,
         // "client_internal_notes": clientInternalNotes,
         // "start_date": startDate.toIso8601String(),
