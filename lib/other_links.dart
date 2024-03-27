@@ -71,10 +71,7 @@ class OLFunctions {
         // return []; // githubNotificationsPlaceholder;
       }
     } catch (e) {
-      popMessage(
-          context,
-          '[GITHUB OTHER LINKS API] GITHUB OTHER LINKS API CALL ERROR WITH RESPONSE CODE: $e',
-          true);
+      throw ('[GITHUB OTHER LINKS API] GITHUB OTHER LINKS API CALL ERROR');
     }
     return githubOLApplications;
   }
