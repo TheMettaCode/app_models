@@ -50,7 +50,7 @@ class OLFunctions {
           thisApplication = applications
               .firstWhere((element) => element.nameTag == applicationNameTag);
           log.w(
-              '[GITHUB OTHER LINKS API] ERROR: THIS APPLICATION ($applicationNameTag) FOUND!!');
+              '[GITHUB OTHER LINKS API] THIS APPLICATION ($applicationNameTag) FOUND!!');
         } else {
           log.e(
               '[GITHUB OTHER LINKS API] ERROR: THIS APPLICATION ($applicationNameTag) IS NOT AN APP OR DOES NOT EXIST');
