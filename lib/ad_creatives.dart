@@ -60,7 +60,7 @@ class AdCreativeFunctions {
         // return [];
       }
     } catch (e) {
-      throw ('[GITHUB AD CREATIVES API] GITHUB ADS API ERROR: $e');
+      throw ('[GITHUB AD CREATIVES API] GITHUB ADS API ERROR');
       // return [];
     }
     // adCreativesNotifier.value = activeAdCreatives;
