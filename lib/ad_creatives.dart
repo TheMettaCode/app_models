@@ -174,10 +174,10 @@ class AdCreatives {
   final int? creativeWidth;
 
   factory AdCreatives.fromJson(Map<String, dynamic> json) => AdCreatives(
-        clientName: "client_name" ?? "No Name",
-        clientId: "client_id" ?? "No ID",
-        clientDescription: "client_description" ?? "No Description",
-        clientInternalNotes: "client_internal_notes" ?? "No Notes",
+        clientName: "client_name",
+        clientId: "client_id",
+        clientDescription: "client_description",
+        clientInternalNotes: "client_internal_notes",
         startDate: json["start_date"] == null || json["start_date"] == ""
             ? DateTime.now()
             : DateTime.parse(json["start_date"]),
@@ -190,19 +190,13 @@ class AdCreatives {
         altText: json["alt_Text"] ?? "",
         frequencyPriority: json["frequency_priority"] ?? 99,
         durationInDays: json["duration_in_days"],
-        applications: [
-          json["applications"].map((x) => x)
-        ], // List<String>.from(json["applications"].map((x) => x)),
-        markets: [
-          json["markets"].map((x) => x)
-        ], // List<String>.from(json["markets"].map((x) => x)),
-        locality: [
-          json["locality"].map((x) => x)
-        ], // List<String>.from(json["locality"].map((x) => x)),
-        linkUrl: json["link_url"] ?? "",
-        creativeUrl: json["creative_url"] ?? "",
-        creativeHeight: json["creative_height"] ?? 0,
-        creativeWidth: json["creative_width"] ?? 0,
+        applications: List<String>.from(json["applications"].map((x) => x)),
+        markets: List<String>.from(json["markets"].map((x) => x)),
+        locality: List<String>.from(json["locality"].map((x) => x)),
+        linkUrl: json["link_url"],
+        creativeUrl: json["creative_url"],
+        creativeHeight: json["creative_height"],
+        creativeWidth: json["creative_width"],
       );
 
   Map<String, dynamic> toJson() => {
