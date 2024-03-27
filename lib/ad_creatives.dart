@@ -28,12 +28,11 @@ class AdCreativeFunctions {
           .timeout(
               const Duration(seconds: adCreativesApiResponseTimeoutSeconds));
       logger.d(
-          '[GITHUB AD CREATIVES API] GITHUB ADS API RESPONSE CODE: ${response.statusCode} *****');
+          '[GITHUB AD CREATIVES API] GITHUB ADS API RESPONSE CODE: ${response.statusCode} *****\n[GITHUB AD CREATIVES API] ${response.body}');
       if (response.statusCode == 200) {
         try {
           logger.w('[GITHUB AD CREATIVES API] MAPPING RETRIEVED DATA');
-          AdCreativesData adCreativesData =
-              adCreativesFromJson(json.encode(response.body));
+          AdCreativesData adCreativesData = adCreativesFromJson(response.body);
           if (adCreativesData.status == "OK" &&
               adCreativesData.name == adCreativesDataName) {
             logger.d(
