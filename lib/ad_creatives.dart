@@ -136,18 +136,18 @@ class AdCreatives {
   AdCreatives({
     required this.clientName,
     required this.clientId,
-    required this.clientDescription,
-    required this.clientInternalNotes,
+    // required this.clientDescription,
+    // required this.clientInternalNotes,
     required this.startDate,
     required this.expirationDate,
     required this.isActive,
-    required this.title,
-    required this.altText,
+    // required this.title,
+    // required this.altText,
     required this.frequencyPriority,
     required this.durationInDays,
     required this.applications,
-    required this.markets,
-    required this.locality,
+    // required this.markets,
+    // required this.locality,
     required this.linkUrl,
     required this.creativeUrl,
     required this.creativeHeight,
@@ -156,18 +156,18 @@ class AdCreatives {
 
   final String clientName;
   final dynamic clientId;
-  final String? clientDescription;
-  final String? clientInternalNotes;
+  // final String? clientDescription;
+  // final String? clientInternalNotes;
   final DateTime startDate;
   final DateTime? expirationDate;
   final bool isActive;
-  final String title;
-  final String? altText;
+  // final String title;
+  // final String? altText;
   final int frequencyPriority;
   final int? durationInDays;
-  final List<dynamic> applications;
-  final List<dynamic> markets;
-  final List<dynamic> locality;
+  final List<String> applications;
+  // final List<String> markets;
+  // final List<String> locality;
   final String linkUrl;
   final String creativeUrl;
   final int? creativeHeight;
@@ -176,8 +176,8 @@ class AdCreatives {
   factory AdCreatives.fromJson(Map<String, dynamic> json) => AdCreatives(
         clientName: "client_name",
         clientId: "client_id",
-        clientDescription: "client_description",
-        clientInternalNotes: "client_internal_notes",
+        // clientDescription: "client_description",
+        // clientInternalNotes: "client_internal_notes",
         startDate: json["start_date"] == null || json["start_date"] == ""
             ? DateTime.now()
             : DateTime.parse(json["start_date"]),
@@ -186,13 +186,13 @@ class AdCreatives {
                 ? DateTime.now().add(const Duration(days: 1))
                 : DateTime.parse(json["expiration_date"]),
         isActive: json["is_active"] ?? false,
-        title: json["title"] ?? "",
-        altText: json["alt_Text"] ?? "",
+        // title: json["title"] ?? "",
+        // altText: json["alt_Text"] ?? "",
         frequencyPriority: json["frequency_priority"] ?? 99,
         durationInDays: json["duration_in_days"],
-        applications: List<dynamic>.from(json["applications"].map((x) => x)),
-        markets: List<dynamic>.from(json["markets"].map((x) => x)),
-        locality: List<dynamic>.from(json["locality"].map((x) => x)),
+        applications: List<String>.from(json["applications"].map((x) => x)),
+        // markets: List<String>.from(json["markets"].map((x) => x)),
+        // locality: List<String>.from(json["locality"].map((x) => x)),
         linkUrl: json["link_url"],
         creativeUrl: json["creative_url"],
         creativeHeight: json["creative_height"],
@@ -202,18 +202,18 @@ class AdCreatives {
   Map<String, dynamic> toJson() => {
         "client_name": clientName,
         "client_id": clientId,
-        "client_description": clientDescription,
-        "client_internal_notes": clientInternalNotes,
+        // "client_description": clientDescription,
+        // "client_internal_notes": clientInternalNotes,
         "start_date": startDate.toIso8601String(),
         "expiration_date": expirationDate?.toIso8601String(),
         "is_active": isActive,
-        "title": title,
-        "alt_text": altText,
+        // "title": title,
+        // "alt_text": altText,
         "frequency_priority": frequencyPriority,
         "duration_in_days": durationInDays,
         "applications": List<dynamic>.from(applications.map((x) => x)),
-        "markets": List<dynamic>.from(markets.map((x) => x)),
-        "locality": List<dynamic>.from(locality.map((x) => x)),
+        // "markets": List<dynamic>.from(markets.map((x) => x)),
+        // "locality": List<dynamic>.from(locality.map((x) => x)),
         "link_url": linkUrl,
         "creative_url": creativeUrl,
         "creative_height": creativeHeight,
