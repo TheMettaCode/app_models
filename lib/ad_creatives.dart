@@ -15,7 +15,7 @@ ValueNotifier<List<AdCreatives>> adCreativesNotifier = ValueNotifier([]);
 
 class AdCreativeFunctions {
   static Future<List<AdCreatives>> getGithubAdCreatives(
-      String appNameTag) async {
+      {required String appNameTag}) async {
     final DateTime now = DateTime.now();
     List<AdCreatives> activeAdCreatives = [];
     try {
