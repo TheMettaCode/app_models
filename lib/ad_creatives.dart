@@ -186,7 +186,7 @@ class AdCreatives {
                 : DateTime.parse(json["expiration_date"]),
         isActive: json["is_active"] ?? false,
         title: json["title"] ?? "",
-        altText: json["altText"] ?? "",
+        altText: json["alt_Text"] ?? "",
         frequencyPriority: json["frequency_priority"] ?? 99,
         durationInDays: json["duration_in_days"],
         applications: List<String>.from(json["applications"].map((x) => x)),
