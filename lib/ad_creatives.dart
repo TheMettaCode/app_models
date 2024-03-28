@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// FUNCTION CONSTANTS
 const int adCreativesApiResponseTimeoutSeconds = 15;
@@ -12,6 +15,111 @@ const String adCreativesDataName = "ad_creatives";
 
 /// DATA NOTIFIER
 ValueNotifier<List<AdCreatives>> adCreativesNotifier = ValueNotifier([]);
+
+class AdCreativeWidgets {
+  static Widget bannerAdContainer() => ValueListenableBuilder(
+      valueListenable: adCreativesNotifier,
+      builder: (context, ads, widget) {
+        if (ads.isNotEmpty) {
+          ads.shuffle();
+          var thisAdCreative = ads.first;
+          return SizedBox(
+            height: 55,
+            child: FadeIn(
+              delay: const Duration(milliseconds: 2000),
+              child: FlipInY(
+                duration: const Duration(milliseconds: 1000),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flash(
+                      infinite: false,
+                      duration: const Duration(milliseconds: 5000),
+                      delay: const Duration(milliseconds: 4000),
+                      child: InkWell(
+                        onTap: () async {
+                          if (await canLaunchUrl(
+                              Uri.parse(thisAdCreative.linkUrl))) {
+                            launchUrl(Uri.parse(thisAdCreative.linkUrl),
+                                mode: LaunchMode.platformDefault);
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .removeCurrentSnackBar();
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                // padding: EdgeInsets.fromLTRB(containerWidth * 0.25, 0,
+                                //     containerWidth * 0.25, containerHeight * 0.5),
+                                elevation: 0,
+                                // duration: Duration(
+                                //     milliseconds: "Could not launch link"
+                                //             .split(" ")
+                                //             .length *
+                                //         800),
+                                // dismissDirection: DismissDirection.startToEnd,
+                                backgroundColor: Colors.transparent,
+                                content: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                        color:
+                                            Theme.of(context).colorScheme.error,
+                                        borderRadius: BorderRadius.circular(0),
+                                        border: Border.all(
+                                          width: 1.5,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        )),
+                                    // alignment: Alignment.center,
+                                    child: Text(
+                                      "Could not launch link".toUpperCase(),
+                                    ))));
+                          }
+                        },
+                        onDoubleTap: null,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 3),
+                          child: Stack(
+                            alignment: Alignment.centerRight,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(3),
+                                child: Image.network(
+                                  thisAdCreative.creativeUrl,
+                                  fit: BoxFit.fitHeight,
+
+                                  ///
+                                  frameBuilder: (BuildContext context,
+                                      Widget child,
+                                      int? frame,
+                                      bool? wasSynchronouslyLoaded) {
+                                    return Flash(
+                                      duration:
+                                          const Duration(milliseconds: 80),
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    // spaceWidth5,
+                    Icon(
+                      FontAwesomeIcons.adversal,
+                      size: 15,
+                      color: Colors.blue.shade900,
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      });
+}
 
 class AdCreativeFunctions {
   static Future<List<AdCreatives>> getGithubAdCreatives(
