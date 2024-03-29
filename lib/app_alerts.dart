@@ -89,6 +89,7 @@ class AppAlertFunctions {
 
     list.sort((a, b) => a.priority.compareTo(b.priority));
 
+    debugPrint('[APP ALERTS API] [PRUNE & SORT] ${list.length} ALERTS REMAIN');
     alertLog.d('[APP ALERTS API] [PRUNE & SORT] ${list.length} ALERTS REMAIN');
     return list;
   }
