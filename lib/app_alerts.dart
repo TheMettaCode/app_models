@@ -16,7 +16,7 @@ ValueNotifier<(AppAlertData?, List<AppAlert>)> appAlertsNotifier =
 
 class AppAlertFunctions {
   static Future<(AppAlertData?, List<AppAlert>)> getApplicationAlerts(
-      {required String appNameTag, bool isInit = false}) async {
+      {required String appNameTag, required bool isInit}) async {
     final DateTime now = DateTime.now();
     AppAlertData? allAlertData;
     List<AppAlert> finalAlertsList = [];
