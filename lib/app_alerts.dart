@@ -2,16 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart';
+import 'package:logger/logger.dart' as alert_logger;
 
 /// FUNCTION CONSTANTS
 const int appAlertsApiResponseTimeoutSeconds = 15;
-final Logger logger = Logger();
+final alert_logger.Logger alert_log = alert_logger.Logger();
 const String appAlertsEndpoint = "mettacode-notifications.json";
 const String appAlertsDataName = "mettacode_notifications";
 
 /// DATA NOTIFIER
-ValueNotifier<List<AppAlert>> appAlertsNotifier = ValueNotifier([]);
+ValueNotifier<(AppAlertData?, List<AppAlert>)> appAlertsNotifier =
+    ValueNotifier((null, []));
 
 class AppAlertFunctions {
   static Future<(AppAlertData?, List<AppAlert>)> getApplicationAlerts(
@@ -30,7 +31,7 @@ class AppAlertFunctions {
                 headers: headers)
             .timeout(
                 const Duration(seconds: appAlertsApiResponseTimeoutSeconds));
-        logger.d(
+        alert_log.d(
             '[APP ALERTS API] GITHUB MSG API RESPONSE CODE: ${response.statusCode} *****');
         if (response.statusCode == 200) {
           AppAlertData appAlertData = appAlertDataFromJson(response.body);
@@ -38,7 +39,7 @@ class AppAlertFunctions {
 
           if (appAlertData.status == "OK" &&
               appAlertData.name == appAlertsDataName) {
-            logger.d('[APP ALERTS API] APP ALERTS DATA RETRIEVED');
+            alert_log.d('[APP ALERTS API] APP ALERTS DATA RETRIEVED');
 
             List<AppAlert> rawAppAlerts = appAlertData.alerts;
 
@@ -46,23 +47,23 @@ class AppAlertFunctions {
             List<AppAlert> activeAlerts = await pruneAndSortAppAlerts(
                 list: rawAppAlerts, now: now, appNameTag: appNameTag);
 
-            logger.d(
+            alert_log.d(
                 '[APP ALERTS API] ${activeAlerts.length} ACTIVE NOTIFICATIONS RETRIEVED');
-            appAlertsNotifier.value = activeAlerts;
+            appAlertsNotifier.value = (allAlertData, activeAlerts);
             finalAlertsList = activeAlerts;
           } else {
-            logger.d(
+            alert_log.d(
                 '[APP ALERTS API]  GITHUB DATA ERROR: DATA APP => ${appAlertData.name} | DATA STATUS => ${appAlertData.status}');
           }
         } else {
-          logger.d(
+          alert_log.d(
               '[APP ALERTS API] GITHUB MSG API CALL ERROR WITH RESPONSE CODE: ${response.statusCode}');
         }
       } catch (e) {
         throw ('[APP ALERTS API] GITHUB MSG API ERROR');
       }
     } else {
-      logger
+      alert_log
           .d('[APP ALERTS API] APP IS NOT IN FIRST LOAD INITIALIZATION STATE.');
     }
     return (allAlertData, finalAlertsList);
@@ -73,7 +74,7 @@ class AppAlertFunctions {
       {required List<AppAlert> list,
       required String appNameTag,
       required DateTime now}) async {
-    logger.d(
+    alert_log.d(
         '[APP ALERTS API] [PRUNE & SORT] PRUNING ${list.length} GITHUB PROMO NOTIFICATIONS');
 
     list.retainWhere((element) =>
@@ -88,7 +89,7 @@ class AppAlertFunctions {
 
     list.sort((a, b) => a.priority.compareTo(b.priority));
 
-    logger.d('[APP ALERTS API] [PRUNE & SORT] ${list.length} ALERTS REMAIN');
+    alert_log.d('[APP ALERTS API] [PRUNE & SORT] ${list.length} ALERTS REMAIN');
     return list;
   }
 }
