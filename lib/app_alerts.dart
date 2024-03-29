@@ -14,9 +14,10 @@ const String appAlertsDataName = "mettacode_notifications";
 ValueNotifier<List<AppAlert>> appAlertsNotifier = ValueNotifier([]);
 
 class AppAlertFunctions {
-  static Future<List<AppAlert>> getApplicationAlerts(
+  static Future<(AppAlertData?, List<AppAlert>)> getApplicationAlerts(
       {required String appNameTag, bool isInit = false}) async {
     final DateTime now = DateTime.now();
+    AppAlertData? allAlertData;
     List<AppAlert> finalAlertsList = [];
 
     if (isInit) {
@@ -33,6 +34,7 @@ class AppAlertFunctions {
             '[APP ALERTS API] GITHUB MSG API RESPONSE CODE: ${response.statusCode} *****');
         if (response.statusCode == 200) {
           AppAlertData appAlertData = appAlertDataFromJson(response.body);
+          allAlertData = appAlertDataFromJson(response.body);
 
           if (appAlertData.status == "OK" &&
               appAlertData.name == appAlertsDataName) {
@@ -63,7 +65,7 @@ class AppAlertFunctions {
       logger
           .d('[APP ALERTS API] APP IS NOT IN FIRST LOAD INITIALIZATION STATE.');
     }
-    return finalAlertsList;
+    return (allAlertData, finalAlertsList);
   }
 
   /// PRUNE AND SORT NOTIFICATIONS
