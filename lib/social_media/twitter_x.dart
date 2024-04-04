@@ -250,6 +250,7 @@ class AppTweetData {
         isPossiblySensitive: json['sensitive'],
       );
 
+  /// ONLYY IF USING GSHEETS AS YOUR DATABASE
   List<String> toGSheetsList() => [
         id,
         text,
@@ -274,6 +275,7 @@ class AppTweetData {
         isPossiblySensitive == null ? "false" : "true",
       ];
 
+  /// ONLY IF USING GSHEETS AS YOUR DATABASE
   factory AppTweetData.fromGSheetsList(List<String> tweet) => AppTweetData(
         id: tweet.first,
         text: tweet[1],
