@@ -249,4 +249,59 @@ class AppTweetData {
         linkToTweet: json["tweet_link"],
         isPossiblySensitive: json['sensitive'],
       );
+
+  List<String> toGSheetsList() => [
+        id,
+        text,
+        authorId ?? "",
+        conversationId ?? "",
+        createdAt == null
+            ? DateTime.now().millisecondsSinceEpoch.toString()
+            : createdAt!.millisecondsSinceEpoch.toString(),
+        editHistoryTweetIds == null
+            ? ""
+            : editHistoryTweetIds!.join(Delimiters.standard),
+        coordinates == null
+            ? ""
+            : coordinates!.map((x) => x.toString()).join(Delimiters.standard),
+        inReplyToUserId ?? "",
+        source ?? "",
+        imageUrl ?? "",
+        linkUrl ?? "",
+        linkToTweet ?? "",
+        isPossiblySensitive == null ? "false" : "true",
+      ];
+
+  factory AppTweetData.fromGSheetsList(List<String> tweet) => AppTweetData(
+        id: tweet.first,
+        text: tweet[1],
+        authorId: tweet[2].isEmpty ? null : tweet[2],
+        conversationId: tweet[3].isEmpty ? null : tweet[3],
+        createdAt: DateTime.fromMillisecondsSinceEpoch(int.parse(tweet[4])),
+        editHistoryTweetIds:
+            tweet[5].isEmpty ? [] : tweet[5].split(Delimiters.standard),
+        coordinates: tweet[6].isEmpty
+            ? []
+            : tweet[6]
+                .split(Delimiters.standard)
+                .map((x) => double.parse(x))
+                .toList(),
+        inReplyToUserId: tweet[7].isEmpty ? null : tweet[7],
+        source: tweet[8].isEmpty ? null : tweet[8],
+        imageUrl: tweet[9].isEmpty ? null : tweet[9],
+        linkUrl: tweet[10].isEmpty ? null : tweet[10],
+        linkToTweet: tweet[11].isEmpty ? null : tweet[11],
+        isPossiblySensitive: tweet[12].toLowerCase() == "true" ? true : false,
+      );
+
+  @override
+  toString() => toGSheetsList().join(Delimiters.tweetData);
+
+  factory AppTweetData.fromString(String string) =>
+      AppTweetData.fromGSheetsList(string.split(Delimiters.tweetData));
+}
+
+class Delimiters {
+  static const standard = "<|:|>";
+  static const tweetData = "<|tweet_data|>";
 }
