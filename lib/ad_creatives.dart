@@ -6,12 +6,10 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'constants.dart';
 
 /// FUNCTION CONSTANTS
-const int adCreativesApiResponseTimeoutSeconds = 15;
-final Logger logger = Logger();
 const String adCreativesEndpoint = "ad-creatives.json";
 const String adCreativesDataName = "ad_creatives";
 
@@ -137,18 +135,17 @@ class AdCreativeFunctions {
               Uri.parse(
                   "https://themettacode.github.io/mettacode-app-data-api/$adCreativesEndpoint"),
               headers: headers)
-          .timeout(
-              const Duration(seconds: adCreativesApiResponseTimeoutSeconds));
-      logger.d(
+          .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
+      appLogger.d(
           '[GITHUB AD CREATIVES API] GITHUB ADS API RESPONSE CODE: ${response.statusCode} *****');
-      // logger.d('\n[GITHUB AD CREATIVES API] ${response.body}');
+      // appLogger.d('\n[GITHUB AD CREATIVES API] ${response.body}');
       if (response.statusCode == 200) {
         try {
-          logger.w('[GITHUB AD CREATIVES API] MAPPING RETRIEVED DATA');
+          appLogger.w('[GITHUB AD CREATIVES API] MAPPING RETRIEVED DATA');
           AdCreativesData adCreativesData = adCreativesFromJson(response.body);
           if (adCreativesData.status == "OK" &&
               adCreativesData.name == adCreativesDataName) {
-            logger.d(
+            appLogger.d(
                 '[GITHUB AD CREATIVES API] GITHUB NOTIFIACATION DATA RETRIEVED');
 
             List<AdCreatives> rawGithubAdCreatives = adCreativesData.creatives;
@@ -159,20 +156,20 @@ class AdCreativeFunctions {
                 dateTime: now,
                 appNameTag: appNameTag);
 
-            logger.d(
+            appLogger.d(
                 '[GITHUB AD CREATIVES API] ${sortedCreatives.length} SORTED ADS RETRIEVED');
             adCreativesNotifier.value = sortedCreatives;
             activeAdCreatives = sortedCreatives;
           } else {
-            logger.d(
+            appLogger.d(
                 '[GITHUB AD CREATIVES API]  GITHUB DATA ERROR: DATA APP => ${adCreativesData.name} | DATA STATUS => ${adCreativesData.status}');
             // return [];
           }
         } catch (e) {
-          logger.e('[GITHUB AD CREATIVES API] GITHUB ADS API ERROR: $e');
+          appLogger.e('[GITHUB AD CREATIVES API] GITHUB ADS API ERROR: $e');
         }
       } else {
-        logger.d(
+        appLogger.d(
             '[GITHUB AD CREATIVES API] GITHUB ADS API CALL ERROR WITH RESPONSE CODE: ${response.statusCode}');
         // return [];
       }
@@ -189,7 +186,7 @@ class AdCreativeFunctions {
       {required String appNameTag,
       required List<AdCreatives> adCreativesList,
       required DateTime dateTime}) async {
-    logger.d(
+    appLogger.d(
         '[GITHUB AD CREATIVES API] [PRUNE & SORT] PRUNING ${adCreativesList.length} GITHUB AD CREATIVES');
 
     adCreativesList
@@ -204,7 +201,7 @@ class AdCreativeFunctions {
                 (element.expirationDate != null &&
                     element.expirationDate!.isAfter(dateTime)))));
 
-    logger.d(
+    appLogger.d(
         '[GITHUB NOTIFICATIONS API] [PRUNE & SORT] ${adCreativesList.length} GITHUB PROMO NOTIFICATIONS REMAIN');
     return adCreativesList;
   }

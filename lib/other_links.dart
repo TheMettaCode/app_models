@@ -2,11 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart';
+
+import 'constants.dart';
 
 /// FUNCTION CONSTANTS
-const int otherLinksApiResponseTimeoutSeconds = 15;
-final Logger log = Logger();
 const String otherLinksEndpoint = "other-links.json";
 
 /// DATA NOTIFIER
@@ -26,20 +25,19 @@ class OLFunctions {
               Uri.parse(
                   "https://themettacode.github.io/mettacode-app-data-api/$otherLinksEndpoint"),
               headers: headers)
-          .timeout(
-              const Duration(seconds: otherLinksApiResponseTimeoutSeconds));
-      log.d(
+          .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
+      appLogger.d(
           '[GITHUB OTHER LINKS API] GITHUB MSG API RESPONSE CODE: ${response.statusCode} *****');
       if (response.statusCode == 200) {
         GithubOtherLinksData githubOtherLinksData =
             githubOtherLinksFromJson(response.body);
-        log.d('[GITHUB OTHER LINKS API] GITHUB LINKS RETRIEVED');
+        appLogger.d('[GITHUB OTHER LINKS API] GITHUB LINKS RETRIEVED');
 
         List<GithubOtherLinks> applications = githubOtherLinksData.otherLinks
             .where((element) => element.isApp)
             .toList();
 
-        log.d('[GITHUB OTHER LINKS API]  RETRIEVED');
+        appLogger.d('[GITHUB OTHER LINKS API]  RETRIEVED');
 
         GithubOtherLinks? thisApplication;
 
@@ -48,10 +46,10 @@ class OLFunctions {
                 .any((element) => element.nameTag == applicationNameTag)) {
           thisApplication = applications
               .firstWhere((element) => element.nameTag == applicationNameTag);
-          log.w(
+          appLogger.w(
               '[GITHUB OTHER LINKS API] THIS APPLICATION ($applicationNameTag) FOUND!!');
         } else {
-          log.e(
+          appLogger.e(
               '[GITHUB OTHER LINKS API] ERROR: THIS APPLICATION ($applicationNameTag) IS NOT AN APP OR DOES NOT EXIST');
         }
 
@@ -65,7 +63,7 @@ class OLFunctions {
 
         // return githubOtherLinks;
       } else {
-        log.e(
+        appLogger.e(
             '[GITHUB OTHER LINKS API] GITHUB OTHER LINKS API CALL ERROR WITH RESPONSE CODE: ${response.statusCode}');
         // return []; // githubNotificationsPlaceholder;
       }
@@ -78,7 +76,7 @@ class OLFunctions {
   static Future<void> popMessage(
       BuildContext context, String message, bool isError,
       {Color? color}) async {
-    log.d('[POP MESSAGE FUNCTION] GENERATING POP-UP MESSAGE *****');
+    appLogger.d('[POP MESSAGE FUNCTION] GENERATING POP-UP MESSAGE *****');
     if (message.isNotEmpty) {
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
