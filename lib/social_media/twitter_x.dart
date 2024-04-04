@@ -260,12 +260,12 @@ class AppTweetData {
             : createdAt!.millisecondsSinceEpoch.toString(),
         editHistoryTweetIds == null
             ? ""
-            : editHistoryTweetIds!.join(AppDelimiters.standard),
+            : editHistoryTweetIds!.join(TweetDelimiters.standard),
         coordinates == null
             ? ""
             : coordinates!
                 .map((x) => x.toString())
-                .join(AppDelimiters.standard),
+                .join(TweetDelimiters.standard),
         inReplyToUserId ?? "",
         source ?? "",
         imageUrl ?? "",
@@ -281,11 +281,11 @@ class AppTweetData {
         conversationId: tweet[3].isEmpty ? null : tweet[3],
         createdAt: DateTime.fromMillisecondsSinceEpoch(int.parse(tweet[4])),
         editHistoryTweetIds:
-            tweet[5].isEmpty ? [] : tweet[5].split(AppDelimiters.standard),
+            tweet[5].isEmpty ? [] : tweet[5].split(TweetDelimiters.standard),
         coordinates: tweet[6].isEmpty
             ? []
             : tweet[6]
-                .split(AppDelimiters.standard)
+                .split(TweetDelimiters.standard)
                 .map((x) => double.parse(x))
                 .toList(),
         inReplyToUserId: tweet[7].isEmpty ? null : tweet[7],
@@ -297,13 +297,13 @@ class AppTweetData {
       );
 
   @override
-  toString() => toGSheetsList().join(AppDelimiters.tweetData);
+  toString() => toGSheetsList().join(TweetDelimiters.tweetData);
 
   factory AppTweetData.fromString(String string) =>
-      AppTweetData.fromGSheetsList(string.split(AppDelimiters.tweetData));
+      AppTweetData.fromGSheetsList(string.split(TweetDelimiters.tweetData));
 }
 
-class AppDelimiters {
+class TweetDelimiters {
   static const standard = "<|:|>";
   static const tweetData = "<|tweet_data|>";
 }
