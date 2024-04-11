@@ -20,7 +20,7 @@ class AdCreativeWidgets {
       builder: (context, ads, widget) {
         if (ads.isNotEmpty) {
           ads.shuffle();
-          AdCreatives thisAdCreative = ads.first;
+          var thisAdCreative = ads.first;
           return SizedBox(
             height: 55,
             child: FadeIn(
@@ -28,7 +28,7 @@ class AdCreativeWidgets {
               child: Padding(
                 padding: const EdgeInsets.all(5),
                 child: Tooltip(
-                  message: thisAdCreative.clientName,
+                  message: thisAdCreative.altText,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -46,32 +46,28 @@ class AdCreativeWidgets {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context)
                                     .removeCurrentSnackBar();
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                    // padding: EdgeInsets.fromLTRB(containerWidth * 0.25, 0,
-                                    //     containerWidth * 0.25, containerHeight * 0.5),
-                                    elevation: 0,
-                                    // duration: Duration(
-                                    //     milliseconds: "Could not launch link"
-                                    //             .split(" ")
-                                    //             .length *
-                                    //         800),
-                                    // dismissDirection: DismissDirection.startToEnd,
-                                    backgroundColor: Colors.transparent,
-                                    content: Container(
-                                        padding: const EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                            color: Theme.of(context).colorScheme.error,
-                                            borderRadius: BorderRadius.circular(0),
-                                            border: Border.all(
-                                              width: 1.5,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                            )),
-                                        // alignment: Alignment.center,
-                                        child: Text(
-                                          "Could not launch link".toUpperCase(),
-                                        ))));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        elevation: 0,
+                                        backgroundColor: Colors.transparent,
+                                        content: Container(
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .error,
+                                                borderRadius:
+                                                    BorderRadius.circular(0),
+                                                border: Border.all(
+                                                  width: 1.5,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary,
+                                                )),
+                                            child: Text(
+                                              "Could not launch link"
+                                                  .toUpperCase(),
+                                            ))));
                               }
                             }
                           },
