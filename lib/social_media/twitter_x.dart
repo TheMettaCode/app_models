@@ -252,6 +252,7 @@ class AppTweetData {
 
   /// ONLYY IF USING GSHEETS AS YOUR DATABASE
   List<String> toGSheetsList() => [
+        // ONLYY IF USING GSHEETS AS YOUR DATABASE
         id,
         text,
         authorId ?? "",

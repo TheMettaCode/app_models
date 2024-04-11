@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:async';
 import 'dart:convert';
 import 'package:animate_do/animate_do.dart';
@@ -22,15 +20,15 @@ class AdCreativeWidgets {
       builder: (context, ads, widget) {
         if (ads.isNotEmpty) {
           ads.shuffle();
-          var thisAdCreative = ads.first;
+          AdCreatives thisAdCreative = ads.first;
           return SizedBox(
             height: 55,
             child: FadeIn(
               delay: const Duration(milliseconds: 2000),
-              child: FlipInY(
-                duration: const Duration(milliseconds: 1000),
-                child: Padding(
-                  padding: const EdgeInsets.all(5),
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: Tooltip(
+                  message: thisAdCreative.clientName,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -45,34 +43,36 @@ class AdCreativeWidgets {
                               launchUrl(Uri.parse(thisAdCreative.linkUrl),
                                   mode: LaunchMode.platformDefault);
                             } else {
-                              ScaffoldMessenger.of(context)
-                                  .removeCurrentSnackBar();
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                  // padding: EdgeInsets.fromLTRB(containerWidth * 0.25, 0,
-                                  //     containerWidth * 0.25, containerHeight * 0.5),
-                                  elevation: 0,
-                                  // duration: Duration(
-                                  //     milliseconds: "Could not launch link"
-                                  //             .split(" ")
-                                  //             .length *
-                                  //         800),
-                                  // dismissDirection: DismissDirection.startToEnd,
-                                  backgroundColor: Colors.transparent,
-                                  content: Container(
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                          color: Theme.of(context).colorScheme.error,
-                                          borderRadius: BorderRadius.circular(0),
-                                          border: Border.all(
-                                            width: 1.5,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                          )),
-                                      // alignment: Alignment.center,
-                                      child: Text(
-                                        "Could not launch link".toUpperCase(),
-                                      ))));
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                    // padding: EdgeInsets.fromLTRB(containerWidth * 0.25, 0,
+                                    //     containerWidth * 0.25, containerHeight * 0.5),
+                                    elevation: 0,
+                                    // duration: Duration(
+                                    //     milliseconds: "Could not launch link"
+                                    //             .split(" ")
+                                    //             .length *
+                                    //         800),
+                                    // dismissDirection: DismissDirection.startToEnd,
+                                    backgroundColor: Colors.transparent,
+                                    content: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                            color: Theme.of(context).colorScheme.error,
+                                            borderRadius: BorderRadius.circular(0),
+                                            border: Border.all(
+                                              width: 1.5,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            )),
+                                        // alignment: Alignment.center,
+                                        child: Text(
+                                          "Could not launch link".toUpperCase(),
+                                        ))));
+                              }
                             }
                           },
                           onDoubleTap: null,
