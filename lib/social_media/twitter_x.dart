@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:twitter_api_v2/twitter_api_v2.dart' as x;
-import '../constants.dart';
+import '../shared/constants.dart';
 
 /// DATA NOTIFIER
 ValueNotifier<x.TweetData?> xTweetDataNotifier = ValueNotifier(null);

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
-import 'constants.dart';
+import 'shared/constants.dart';
 
 /// FUNCTION CONSTANTS
 const String adCreativesEndpoint = "ad-creatives.json";

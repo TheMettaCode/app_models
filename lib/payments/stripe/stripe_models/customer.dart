@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:app_models/constants.dart';
+import '../../../shared/constants.dart';
 
 StripeCustomer stripeCustomerFromJson(String str) =>
     StripeCustomer.fromJson(json.decode(str));
@@ -42,19 +42,19 @@ class StripeCustomer {
   final CustomerAddress? address;
   // final int balance;
   final int created;
-  final String currency;
+  final String? currency;
   // final String defaultSource;
   // final bool delinquent;
-  final String description;
+  final String? description;
   // final dynamic discount;
-  final String email;
+  final String? email;
   // final String invoicePrefix;
   // final CustomerInvoiceSettings invoiceSettings;
   // final bool livemode;
   final CustomerMetadata? metadata;
-  final String name;
+  final String? name;
   // final int nextInvoiceSequence;
-  final String phone;
+  final String? phone;
   // final List<dynamic> preferredLocales;
   // final dynamic shipping;
   // final String taxExempt;
@@ -245,14 +245,14 @@ class CustomerMetadata {
     required this.appVersion,
     required this.application,
     required this.installerStore,
-    required this.totalCredits,
+    // required this.totalCredits,
   });
 
   final String appUserId;
   final String appVersion;
   final String application;
   final String installerStore;
-  final int totalCredits;
+  // final int totalCredits;
 
   factory CustomerMetadata.fromJson(Map<String, dynamic> json) =>
       CustomerMetadata(
@@ -260,9 +260,9 @@ class CustomerMetadata {
         appVersion: json["app_version"] ?? "",
         application: json["application"] ?? "",
         installerStore: json["installer_store"] ?? "",
-        totalCredits: int.parse(
-          json["total_credits"] ?? "",
-        ),
+        // totalCredits: int.parse(
+        //   json["total_credits"] ?? "",
+        // ),
       );
 
   Map<String, dynamic> toJson() => {
@@ -270,12 +270,12 @@ class CustomerMetadata {
         "app_version": appVersion,
         "application": application,
         "installer_store": installerStore,
-        "total_credits": totalCredits,
+        // "total_credits": totalCredits,
       };
 
   @override
   toString() =>
-      "$appUserId$standardDelimiter$appVersion$standardDelimiter$application$standardDelimiter$installerStore$standardDelimiter$totalCredits";
+      "$appUserId$standardDelimiter$appVersion$standardDelimiter$application$standardDelimiter$installerStore";
 
   factory CustomerMetadata.fromString(String x) {
     var item = x.split(standardDelimiter);
@@ -284,7 +284,7 @@ class CustomerMetadata {
       appVersion: item.length > 1 ? item[1] : "",
       application: item.length > 2 ? item[2] : "",
       installerStore: item.length > 3 ? item[3] : "",
-      totalCredits: item.length > 4 ? int.parse(item[4]) : 0,
+      // totalCredits: item.length > 4 ? int.parse(item[4]) : 0,
     );
   }
 }

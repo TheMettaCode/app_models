@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'constants.dart';
+import 'shared/constants.dart';
 
 /// FUNCTION CONSTANTS
 const String otherLinksEndpoint = "other-links.json";
@@ -71,31 +71,6 @@ class OLFunctions {
       throw ('[GITHUB OTHER LINKS API] GITHUB OTHER LINKS API CALL ERROR');
     }
     return githubOLApplications;
-  }
-
-  static Future<void> popMessage(
-      BuildContext context, String message, bool isError,
-      {Color? color}) async {
-    appLogger.d('[POP MESSAGE FUNCTION] GENERATING POP-UP MESSAGE *****');
-    if (message.isNotEmpty) {
-      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        elevation: 0,
-        backgroundColor: color ?? Theme.of(context).colorScheme.error,
-        content: Padding(
-          padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-          child: Container(
-            padding: const EdgeInsets.all(5),
-            child: Text(message.toUpperCase(),
-                style: TextStyle(
-                    fontSize: 15,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontWeight: FontWeight.normal),
-                textAlign: TextAlign.center),
-          ),
-        ),
-      ));
-    }
   }
 }
 

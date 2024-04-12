@@ -165,25 +165,3 @@ class StripeProduct {
 //         "price": retailPriceString,
 //       };
 // }
-
-StripeProduct stripeDummyProduct = StripeProduct(
-    id: "id",
-    object: "object",
-    active: false,
-    attributes: ["attributes"],
-    created: DateTime.now().millisecondsSinceEpoch,
-    defaultPrice: "defaultPrice",
-    description: "description",
-    images: ["images"],
-    livemode: false,
-    // metadata:
-    //     StripeProductMetadata(costString: "1000", retailPriceString: "2000"),
-    name: "name",
-    packageDimensions: "packageDimensions",
-    shippable: false,
-    statementDescriptor: "statementDescriptor",
-    taxCode: "taxCode",
-    type: "type",
-    unitLabel: "unitLabel",
-    updated: 56799,
-    url: "url");

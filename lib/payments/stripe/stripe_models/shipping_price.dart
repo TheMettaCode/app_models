@@ -4,13 +4,13 @@
 
 import 'dart:convert';
 
-StripeShippingId stripeShippingIdFromJson(String str) =>
-    StripeShippingId.fromJson(json.decode(str));
+StripeShippingPrice stripeShippingIdFromJson(String str) =>
+    StripeShippingPrice.fromJson(json.decode(str));
 
-String stripeShippingIdToJson(StripeShippingId data) =>
+String stripeShippingIdToJson(StripeShippingPrice data) =>
     json.encode(data.toJson());
 
-class StripeShippingId {
+class StripeShippingPrice {
   String id;
   String object;
   bool active;
@@ -24,7 +24,7 @@ class StripeShippingId {
   dynamic taxCode;
   String type;
 
-  StripeShippingId({
+  StripeShippingPrice({
     required this.id,
     required this.object,
     required this.active,
@@ -39,8 +39,8 @@ class StripeShippingId {
     required this.type,
   });
 
-  factory StripeShippingId.fromJson(Map<String, dynamic> json) =>
-      StripeShippingId(
+  factory StripeShippingPrice.fromJson(Map<String, dynamic> json) =>
+      StripeShippingPrice(
         id: json["id"],
         object: json["object"],
         active: json["active"],

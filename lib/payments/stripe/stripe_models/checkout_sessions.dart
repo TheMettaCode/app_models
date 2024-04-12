@@ -118,7 +118,7 @@
 //   // final InvoiceCreation invoiceCreation;
 //   final bool livemode;
 //   final String locale;
-//   final MetadataFromPaymentLink metadata;
+//   final PaymentLinkMetadata metadata;
 //   final String mode;
 //   final dynamic paymentIntent;
 //   final String paymentLink;
@@ -176,7 +176,7 @@
 //         //     : InvoiceCreation.fromJson(json["invoice_creation"]),
 //         livemode: json["livemode"],
 //         locale: json["locale"],
-//         metadata: MetadataFromPaymentLink.fromJson(json["metadata"]),
+//         metadata: PaymentLinkMetadata.fromJson(json["metadata"]),
 //         mode: json["mode"],
 //         paymentIntent: json["payment_intent"],
 //         paymentLink: json["payment_link"],
@@ -459,8 +459,8 @@
 // //   Map<String, dynamic> toJson() => {};
 // // }
 
-// class MetadataFromPaymentLink {
-//   MetadataFromPaymentLink({
+// class PaymentLinkMetadata {
+//   PaymentLinkMetadata({
 //     required this.appUserId,
 //     required this.appVersion,
 //     required this.stripeCustomerId,
@@ -470,8 +470,8 @@
 //   final String appVersion;
 //   final String stripeCustomerId;
 
-//   factory MetadataFromPaymentLink.fromJson(Map<String, dynamic> json) =>
-//       MetadataFromPaymentLink(
+//   factory PaymentLinkMetadata.fromJson(Map<String, dynamic> json) =>
+//       PaymentLinkMetadata(
 //         appUserId: json["app_session_id"] ?? "",
 //         appVersion: json["app_version"] ?? "",
 //         stripeCustomerId: json["stripe_customer_id"] ?? "",
@@ -578,7 +578,7 @@ class CheckoutSessionsDatum {
     required this.amountTotal,
     // required this.automaticTax,
     // required this.billingAddressCollection,
-    required this.cancelUrl,
+    // required this.cancelUrl,
     required this.clientReferenceId,
     // required this.consent,
     // required this.consentCollection,
@@ -612,7 +612,7 @@ class CheckoutSessionsDatum {
     required this.status,
     // required this.submitType,
     // required this.subscription,
-    required this.successUrl,
+    // required this.successUrl,
     required this.totalDetails,
     // required this.url,
   });
@@ -625,7 +625,7 @@ class CheckoutSessionsDatum {
   final int? amountTotal;
   // final AutomaticTax automaticTax;
   // final String billingAddressCollection;
-  final String cancelUrl;
+  // final String cancelUrl;
   final String clientReferenceId;
   // final dynamic consent;
   // final dynamic consentCollection;
@@ -634,14 +634,14 @@ class CheckoutSessionsDatum {
   // final CustomText customText;
   final String? customer;
   // final String customerCreation;
-  final CustomerDetails? customerDetails;
+  final CheckoutSessionCustomerDetails? customerDetails;
   // final dynamic customerEmail;
   // final int expiresAt;
   // final String invoice;
   // // final InvoiceCreation? invoiceCreation;
   // final bool livemode;
   // final String locale;
-  // final MetadataFromPaymentLink metadata;
+  // final PaymentLinkMetadata metadata;
   // final String mode;
   // final String paymentIntent;
   final String paymentLink;
@@ -653,14 +653,14 @@ class CheckoutSessionsDatum {
   // final dynamic recoveredFrom;
   // final dynamic setupIntent;
   // final dynamic shippingAddressCollection;
-  final ShippingCost? shippingCost;
-  final ShippingDetails? shippingDetails;
+  final CheckoutSessionShippingCost? shippingCost;
+  final CheckoutSessionShippingDetails? shippingDetails;
   // final List<dynamic> shippingOptions;
   final String status;
   // final String submitType;
   // final String subscription;
-  final String successUrl;
-  final TotalDetails totalDetails;
+  // final String successUrl;
+  final CheckoutSessionTotalDetails totalDetails;
   // final String? url;
 
   factory CheckoutSessionsDatum.fromJson(Map<String, dynamic> json) =>
@@ -673,7 +673,7 @@ class CheckoutSessionsDatum {
         amountTotal: json["amount_total"] ?? 0,
         // automaticTax: AutomaticTax.fromJson(json["automatic_tax"]),
         // billingAddressCollection: json["billing_address_collection"],
-        cancelUrl: json["cancel_url"],
+        // cancelUrl: json["cancel_url"] ?? Application.paymentCancelUrl,
         clientReferenceId:
             json["client_reference_id"] ?? "No Client Reference ID",
         // consent: json["consent"] ?? "No Data",
@@ -685,7 +685,8 @@ class CheckoutSessionsDatum {
         // customerCreation: json["customer_creation"],
         customerDetails: json["customer_details"] == null
             ? null
-            : CustomerDetails?.fromJson(json["customer_details"]),
+            : CheckoutSessionCustomerDetails?.fromJson(
+                json["customer_details"]),
         // customerEmail: json["customer_email"] ?? "No Data",
         // expiresAt: json["expires_at"],
         // invoice: json["invoice"] ?? "No Data",
@@ -694,7 +695,7 @@ class CheckoutSessionsDatum {
         //     : InvoiceCreation.fromJson(json["invoice_creation"]),
         // livemode: json["livemode"],
         // locale: json["locale"],
-        // metadata: MetadataFromPaymentLink.fromJson(json["metadata"]),
+        // metadata: PaymentLinkMetadata.fromJson(json["metadata"]),
         // mode: json["mode"],
         // paymentIntent: json["payment_intent"] ?? "No Data",
         paymentLink: json["payment_link"] ?? "",
@@ -712,18 +713,19 @@ class CheckoutSessionsDatum {
         // shippingAddressCollection: json["shipping_address_collection"],
         shippingCost: json["shipping_cost"] == null
             ? null
-            : ShippingCost.fromJson(json["shipping_cost"]),
+            : CheckoutSessionShippingCost.fromJson(json["shipping_cost"]),
         shippingDetails: json["shipping_details"] == null
             ? null
-            : ShippingDetails.fromJson(json["shipping_details"]),
+            : CheckoutSessionShippingDetails.fromJson(json["shipping_details"]),
         // shippingOptions:
         //     List<dynamic>.from(json["shipping_options"].map((x) => x)),
         status: json["status"] ?? "",
         // submitType: json["submit_type"],
         // subscription:
         //     json["subscription"] == null ? null : json["subscription"],
-        successUrl: json["success_url"],
-        totalDetails: TotalDetails.fromJson(json["total_details"]),
+        // successUrl: json["success_url"] ?? Application.paymentCancelUrl,
+        totalDetails:
+            CheckoutSessionTotalDetails.fromJson(json["total_details"]),
         // url: json["url"] ?? "No Data",
       );
 
@@ -736,7 +738,7 @@ class CheckoutSessionsDatum {
         "amount_total": amountTotal,
         // "automatic_tax": automaticTax.toJson(),
         // "billing_address_collection": billingAddressCollection,
-        "cancel_url": cancelUrl,
+        // "cancel_url": cancelUrl,
         "client_reference_id": clientReferenceId,
         // "consent": consent,
         // "consent_collection": consentCollection,
@@ -774,24 +776,24 @@ class CheckoutSessionsDatum {
         "status": status,
         // "submit_type": submitType,
         // "subscription": subscription == null ? null : subscription,
-        "success_url": successUrl,
+        // "success_url": successUrl,
         "total_details": totalDetails.toJson(),
         // "url": url ?? "No Data",
       };
 }
 
-class ShippingDetails {
-  final StripeAddress address;
+class CheckoutSessionShippingDetails {
+  final CheckoutSessionAddress address;
   final String name;
 
-  ShippingDetails({
+  CheckoutSessionShippingDetails({
     required this.address,
     required this.name,
   });
 
-  factory ShippingDetails.fromJson(Map<String, dynamic> json) =>
-      ShippingDetails(
-        address: StripeAddress.fromJson(json["address"]),
+  factory CheckoutSessionShippingDetails.fromJson(Map<String, dynamic> json) =>
+      CheckoutSessionShippingDetails(
+        address: CheckoutSessionAddress.fromJson(json["address"]),
         name: json["name"],
       );
 
@@ -801,8 +803,8 @@ class ShippingDetails {
       };
 }
 
-class ShippingCost {
-  ShippingCost({
+class CheckoutSessionShippingCost {
+  CheckoutSessionShippingCost({
     required this.amountSubtotal,
     required this.amountTotal,
     required this.amountTax,
@@ -814,7 +816,8 @@ class ShippingCost {
   final int amountTax;
   final String shippingRate;
 
-  factory ShippingCost.fromJson(Map<String, dynamic> json) => ShippingCost(
+  factory CheckoutSessionShippingCost.fromJson(Map<String, dynamic> json) =>
+      CheckoutSessionShippingCost(
         amountSubtotal: json["amount_subtotal"],
         amountTotal: json["amount_total"],
         amountTax: json["amount_tax"],
@@ -829,7 +832,7 @@ class ShippingCost {
       };
 }
 
-class StripeAddress {
+class CheckoutSessionAddress {
   final String city;
   final String country;
   final String line1;
@@ -837,7 +840,7 @@ class StripeAddress {
   final String postalCode;
   final String state;
 
-  StripeAddress({
+  CheckoutSessionAddress({
     required this.city,
     required this.country,
     required this.line1,
@@ -846,7 +849,8 @@ class StripeAddress {
     required this.state,
   });
 
-  factory StripeAddress.fromJson(Map<String, dynamic> json) => StripeAddress(
+  factory CheckoutSessionAddress.fromJson(Map<String, dynamic> json) =>
+      CheckoutSessionAddress(
         city: json["city"],
         country: json["country"],
         line1: json["line1"],
@@ -868,8 +872,8 @@ class StripeAddress {
       "$line1${line2 == null || line2!.isEmpty ? "" : "\n$line2"}\n$city $state $postalCode $country";
 }
 
-class AutomaticTax {
-  AutomaticTax({
+class CheckoutSessionAutomaticTax {
+  CheckoutSessionAutomaticTax({
     required this.enabled,
     required this.status,
   });
@@ -877,7 +881,8 @@ class AutomaticTax {
   final bool enabled;
   final dynamic status;
 
-  factory AutomaticTax.fromJson(Map<String, dynamic> json) => AutomaticTax(
+  factory CheckoutSessionAutomaticTax.fromJson(Map<String, dynamic> json) =>
+      CheckoutSessionAutomaticTax(
         enabled: json["enabled"] ?? false,
         status: json["status"] ?? "",
       );
@@ -888,8 +893,8 @@ class AutomaticTax {
       };
 }
 
-class CustomText {
-  CustomText({
+class CheckoutSessionCustomText {
+  CheckoutSessionCustomText({
     required this.shippingAddress,
     required this.submit,
   });
@@ -897,7 +902,8 @@ class CustomText {
   final dynamic shippingAddress;
   final dynamic submit;
 
-  factory CustomText.fromJson(Map<String, dynamic> json) => CustomText(
+  factory CheckoutSessionCustomText.fromJson(Map<String, dynamic> json) =>
+      CheckoutSessionCustomText(
         shippingAddress: json["shipping_address"] ?? "No Data",
         submit: json["submit"] ?? "No Data",
       );
@@ -908,8 +914,8 @@ class CustomText {
       };
 }
 
-class CustomerDetails {
-  CustomerDetails({
+class CheckoutSessionCustomerDetails {
+  CheckoutSessionCustomerDetails({
     required this.address,
     required this.email,
     required this.name,
@@ -918,16 +924,16 @@ class CustomerDetails {
     // required this.taxIds,
   });
 
-  final StripeAddress address;
+  final CheckoutSessionAddress address;
   final String email;
   final String name;
   final String? phone;
   // final String taxExempt;
   // final List<dynamic> taxIds;
 
-  factory CustomerDetails.fromJson(Map<String, dynamic> json) =>
-      CustomerDetails(
-        address: StripeAddress.fromJson(json["address"]),
+  factory CheckoutSessionCustomerDetails.fromJson(Map<String, dynamic> json) =>
+      CheckoutSessionCustomerDetails(
+        address: CheckoutSessionAddress.fromJson(json["address"]),
         email: json["email"],
         name: json["name"],
         phone: json["phone"],
@@ -947,19 +953,19 @@ class CustomerDetails {
       };
 }
 
-class InvoiceCreation {
-  InvoiceCreation({
+class CheckoutSessionInvoiceCreation {
+  CheckoutSessionInvoiceCreation({
     required this.enabled,
     required this.invoiceData,
   });
 
   final bool enabled;
-  final InvoiceData invoiceData;
+  final CheckoutSessionInvoiceData invoiceData;
 
-  factory InvoiceCreation.fromJson(Map<String, dynamic> json) =>
-      InvoiceCreation(
+  factory CheckoutSessionInvoiceCreation.fromJson(Map<String, dynamic> json) =>
+      CheckoutSessionInvoiceCreation(
         enabled: json["enabled"] ?? false,
-        invoiceData: InvoiceData.fromJson(json["invoice_data"]),
+        invoiceData: CheckoutSessionInvoiceData.fromJson(json["invoice_data"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -968,8 +974,8 @@ class InvoiceCreation {
       };
 }
 
-class InvoiceData {
-  InvoiceData({
+class CheckoutSessionInvoiceData {
+  CheckoutSessionInvoiceData({
     required this.accountTaxIds,
     required this.customFields,
     required this.description,
@@ -985,7 +991,8 @@ class InvoiceData {
   // final PaymentMethodOptions metadata;
   final dynamic renderingOptions;
 
-  factory InvoiceData.fromJson(Map<String, dynamic> json) => InvoiceData(
+  factory CheckoutSessionInvoiceData.fromJson(Map<String, dynamic> json) =>
+      CheckoutSessionInvoiceData(
         accountTaxIds: json["account_tax_ids"] ?? "No Data",
         customFields: json["custom_fields"] ?? "No Data",
         description: json["description"] ?? "No Data",
@@ -1013,8 +1020,8 @@ class InvoiceData {
 //   Map<String, dynamic> toJson() => {};
 // }
 
-class MetadataFromPaymentLink {
-  MetadataFromPaymentLink({
+class CheckoutSessionMetadata {
+  CheckoutSessionMetadata({
     this.appUserId,
     required this.appSessionId,
     required this.appVersion,
@@ -1027,8 +1034,8 @@ class MetadataFromPaymentLink {
   final String? appUserId;
   // final String stripeCustomerId;
 
-  factory MetadataFromPaymentLink.fromJson(Map<String, dynamic> json) =>
-      MetadataFromPaymentLink(
+  factory CheckoutSessionMetadata.fromJson(Map<String, dynamic> json) =>
+      CheckoutSessionMetadata(
         appSessionId: json["app_session_id"],
         appVersion: json["app_version"],
         appUserId: json["app_user_id"] ?? "no user id",
@@ -1060,8 +1067,8 @@ class MetadataFromPaymentLink {
 //       };
 // }
 
-class TotalDetails {
-  TotalDetails({
+class CheckoutSessionTotalDetails {
+  CheckoutSessionTotalDetails({
     required this.amountDiscount,
     required this.amountShipping,
     required this.amountTax,
@@ -1073,7 +1080,8 @@ class TotalDetails {
   final int amountTax;
   final String url;
 
-  factory TotalDetails.fromJson(Map<String, dynamic> json) => TotalDetails(
+  factory CheckoutSessionTotalDetails.fromJson(Map<String, dynamic> json) =>
+      CheckoutSessionTotalDetails(
         amountDiscount: json["amount_discount"],
         amountShipping: json["amount_shipping"],
         amountTax: json["amount_tax"],
