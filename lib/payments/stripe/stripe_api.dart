@@ -41,7 +41,7 @@ class StripeSecrets {
   final String? publishableTestKey;
 }
 
-class StripeApi {
+class StripeHelper {
   ///
   static Future<List<StripeCustomer>> stripePaymentInit({
     required StripeSecrets secrets,
@@ -67,7 +67,7 @@ class StripeApi {
 
       appLogger.f(
           '[[ STRIPE PAYMENT API INIT ]] SEARCHING FOR${testing ? ' TEST' : ''} STRIPE CUSTOMER FROM REMOTE SERVER USING APP USER ID');
-      await StripeApi.searchForExistingStripeCustomer(
+      await searchForExistingStripeCustomer(
         secrets: secrets,
         testing: testing,
         name: name,
