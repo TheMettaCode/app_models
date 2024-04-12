@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'shared/constants.dart';
+import 'shared/functions.dart';
 
 /// FUNCTION CONSTANTS
 const String adCreativesEndpoint = "ad-creatives.json";
@@ -38,38 +39,8 @@ class AdCreativeWidgets {
                         delay: const Duration(milliseconds: 4000),
                         child: InkWell(
                           onTap: () async {
-                            if (await canLaunchUrl(
-                                Uri.parse(thisAdCreative.linkUrl))) {
-                              launchUrl(Uri.parse(thisAdCreative.linkUrl),
-                                  mode: LaunchMode.platformDefault);
-                            } else {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context)
-                                    .removeCurrentSnackBar();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        elevation: 0,
-                                        backgroundColor: Colors.transparent,
-                                        content: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .error,
-                                                borderRadius:
-                                                    BorderRadius.circular(0),
-                                                border: Border.all(
-                                                  width: 1.5,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .primary,
-                                                )),
-                                            child: Text(
-                                              "Could not launch link"
-                                                  .toUpperCase(),
-                                            ))));
-                              }
-                            }
+                            launchLink(
+                                context: context, url: thisAdCreative.linkUrl);
                           },
                           onDoubleTap: null,
                           child: Padding(
