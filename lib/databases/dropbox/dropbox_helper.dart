@@ -18,6 +18,16 @@ class DropboxSecrets {
   final String refreshToken;
 }
 
+enum DropboxFolders {
+  notificationImages("notification_images"),
+  productImages("product_images"),
+  promoImages("promo_images"),
+  otherImages("other_images");
+
+  const DropboxFolders(this.value);
+  final String value;
+}
+
 class DropboxHelper {
   static Future<String?> generateAccessToken(
       {required DropboxSecrets secrets}) async {
@@ -61,7 +71,9 @@ class DropboxHelper {
 
   ///
   static Future<(String?, String?)> uploadImage({
-    required bool isNotification,
+    // required bool isNotification,
+    required DropboxFolders? dropboxFolder,
+    String? rootFolderName,
     File? imageFile,
     Uint8List? webImageDataList,
     required String filenameWithExt,
@@ -73,11 +85,12 @@ class DropboxHelper {
     if ((kIsWeb && webImageDataList != null) || imageFile != null) {
       try {
         // Create a reference to "file.ext"
-        final imageRef =
-            "/applications/scapegoats/apparel/${isNotification ? 'notification' : 'product'}_images/$filenameWithExt";
+        final pathReference =
+            "/${rootFolderName == null ? '$rootFolderName/' : ''}${dropboxFolder?.value ?? 'miscellaneous_files'}/$filenameWithExt";
+        // "/applications/scapegoats/apparel/${isNotification ? 'notification' : 'product'}_images/$filenameWithExt";
 
-        debugPrint(
-            "[[ DROPBOX HELPER :: UPLOAD IMAGE ]] DROPBOX IMAGE REFERENCE: $imageRef");
+        appLogger.d(
+            "[[ DROPBOX HELPER :: UPLOAD IMAGE ]] DROPBOX IMAGE REFERENCE: $pathReference");
 
         if (kIsWeb) {
           uploadData = webImageDataList;
@@ -87,19 +100,21 @@ class DropboxHelper {
 
         ///
         if (uploadData != null) {
-          debugPrint(
+          appLogger.d(
               "[[ DROPBOX HELPER :: UPLOAD IMAGE ]] SETTING UPLOAD HEADERS...");
 
           Map<String, String> uploadHeaders = {
             'Authorization': 'Bearer ${dropboxAccessTokenNotifier.value}',
             'Content-type': 'application/octet-stream',
             'Dropbox-API-Arg':
-                '{\"path\": \"/apparel/${isNotification ? 'notification' : 'product'}_images/$filenameWithExt\", \"mode\": \"overwrite\"}',
+                // ignore: unnecessary_string_escapes
+                '{\"path\": \"$pathReference\", \"mode\": \"overwrite\"}',
+            // '{\"path\": \"/apparel/${dropboxFolder ?? 'miscellaneous_files'}/$filenameWithExt\", \"mode\": \"overwrite\"}',
+            // '{\"path\": \"/apparel/${isNotification ? 'notification' : 'product'}_images/$filenameWithExt\", \"mode\": \"overwrite\"}',
           };
 
-          debugPrint
-              // Utilities.logger.i
-              ("[[ DROPBOX HELPER :: UPLOAD IMAGE ]] STARTING UPLOAD HTTP POST...");
+          appLogger.d(
+              "[[ DROPBOX HELPER :: UPLOAD IMAGE ]] STARTING UPLOAD HTTP POST...");
 
           final uploadResp = await http.post(
             Uri.parse("https://content.dropboxapi.com/2/files/upload"),
@@ -110,7 +125,6 @@ class DropboxHelper {
           final fileUploadResponseData = uploadResp.body;
 
           appLogger.d(
-              // Utilities.logger.i(
               "[[ DROPBOX HELPER :: UPLOAD IMAGE ]] IMAGE UPLOAD RESPONSE BODY: ====> $fileUploadResponseData");
 
           var fileJson = jsonDecode(fileUploadResponseData);

@@ -8,6 +8,11 @@ import '../shared/constants.dart';
 ValueNotifier<x.TweetData?> xTweetDataNotifier = ValueNotifier(null);
 ValueNotifier<AppTweetData?> appTweetDataNotifier = ValueNotifier(null);
 
+class TweetDelimiters {
+  static const standard = "<|:|>";
+  static const tweetData = "<|tweet_data|>";
+}
+
 class TwitterSecrets {
   TwitterSecrets(
       {required this.consumerKey,
@@ -299,9 +304,4 @@ class AppTweetData {
 
   factory AppTweetData.fromString(String string) =>
       AppTweetData.fromGSheetsList(string.split(TweetDelimiters.tweetData));
-}
-
-class TweetDelimiters {
-  static const standard = "<|:|>";
-  static const tweetData = "<|tweet_data|>";
 }
