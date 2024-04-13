@@ -17,24 +17,18 @@ class TwitterSecrets {
       required this.accessTokenSecret});
 
   /// TWITTER ACCOUNT KEYS
-  final String consumerKey; // Env.twitterApiKey
-  final String consumerSecret; // Env.twitterSecretKey
-  final String?
-      bearerToken; // Env.twitterBearerToken //? Leave 'null' if using v1
-  final String accessToken; // Env.twitterAccessToken
-  final String accessTokenSecret; // Env.twitterAccessTokenSecret
-
-  // /// TWITTER ACCOUNT KEYS
-  // static final String twitterConsumerKey = Env.twitterApiKey;
-  // static final String twitterConsumerSecret = Env.twitterSecretKey;
-  // static final String twitterBearerToken = Env.twitterBearerToken;
-  // static final String twitterAccessToken = Env.twitterAccessToken;
-  // static final String twitterAccessTokenSecret = Env.twitterAccessTokenSecret;
+  /// If using v1 authorization, leave the bearer token as [null]
+  /// or send an empty string [""]
+  final String consumerKey;
+  final String consumerSecret;
+  final String? bearerToken; //? Leave 'null' if using v1
+  final String accessToken;
+  final String accessTokenSecret;
 }
 
-class TwitterXApi {
+class TwitterXHelper {
   /// TWITTER
-  static Future<(x.TweetData?, AppTweetData?)> twitterPost({
+  static Future<(x.TweetData?, AppTweetData?)> postToTwitterX({
     required TwitterSecrets twitterSecrets,
     required String message,
     String? urlLink,

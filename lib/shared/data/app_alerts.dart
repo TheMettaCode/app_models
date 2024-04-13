@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'shared/constants.dart';
+import '../constants.dart';
 
 /// FUNCTION CONSTANTS
 const String appAlertsEndpoint = "mettacode-notifications.json";

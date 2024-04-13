@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
-import 'shared/constants.dart';
-import 'shared/functions.dart';
+import '../constants.dart';
+import '../functions.dart';
 
 /// FUNCTION CONSTANTS
 const String adCreativesEndpoint = "ad-creatives.json";
@@ -16,78 +16,84 @@ const String adCreativesDataName = "ad_creatives";
 ValueNotifier<List<AdCreatives>> adCreativesNotifier = ValueNotifier([]);
 
 class AdCreativeWidgets {
-  static Widget bannerAdContainer() => ValueListenableBuilder(
-      valueListenable: adCreativesNotifier,
-      builder: (context, ads, widget) {
-        if (ads.isNotEmpty) {
-          ads.shuffle();
-          var thisAdCreative = ads.first;
-          return SizedBox(
-            height: 55,
-            child: FadeIn(
-              delay: const Duration(milliseconds: 2000),
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: Tooltip(
-                  message: thisAdCreative.altText,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flash(
-                        infinite: false,
-                        duration: const Duration(milliseconds: 5000),
-                        delay: const Duration(milliseconds: 4000),
-                        child: InkWell(
-                          onTap: () async {
-                            launchLink(
-                                context: context, url: thisAdCreative.linkUrl);
-                          },
-                          onDoubleTap: null,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 3),
-                            child: Stack(
-                              alignment: Alignment.centerRight,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(3),
-                                  child: Image.network(
-                                    thisAdCreative.creativeUrl,
-                                    fit: BoxFit.fitHeight,
+  static Widget bannerAdContainer(
+          {double? containerHeight, double? containerWidth}) =>
+      ValueListenableBuilder(
+          valueListenable: adCreativesNotifier,
+          builder: (context, ads, widget) {
+            if (ads.isNotEmpty) {
+              ads.shuffle();
+              AdCreatives thisAdCreative = ads.first;
 
-                                    ///
-                                    frameBuilder: (BuildContext context,
-                                        Widget child,
-                                        int? frame,
-                                        bool? wasSynchronouslyLoaded) {
-                                      return Flash(
-                                        duration:
-                                            const Duration(milliseconds: 80),
-                                        child: child,
-                                      );
-                                    },
-                                  ),
+              ///
+              return SizedBox(
+                height: containerHeight ?? 55,
+                width: containerWidth,
+                child: FadeIn(
+                  delay: const Duration(milliseconds: 2000),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Tooltip(
+                      message: thisAdCreative.altText,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Flash(
+                            infinite: false,
+                            duration: const Duration(milliseconds: 5000),
+                            delay: const Duration(milliseconds: 4000),
+                            child: InkWell(
+                              onTap: () async {
+                                launchLink(
+                                    context: context,
+                                    url: thisAdCreative.linkUrl);
+                              },
+                              onDoubleTap: null,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 3),
+                                child: Stack(
+                                  alignment: Alignment.centerRight,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(3),
+                                      child: Image.network(
+                                        thisAdCreative.creativeUrl,
+                                        fit: BoxFit.fitHeight,
+
+                                        ///
+                                        frameBuilder: (BuildContext context,
+                                            Widget child,
+                                            int? frame,
+                                            bool? wasSynchronouslyLoaded) {
+                                          return Flash(
+                                            duration: const Duration(
+                                                milliseconds: 80),
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
+                          // spaceWidth5,
+                          Icon(
+                            FontAwesomeIcons.adversal,
+                            size: 15,
+                            color: Colors.blue.shade900,
+                          )
+                        ],
                       ),
-                      // spaceWidth5,
-                      Icon(
-                        FontAwesomeIcons.adversal,
-                        size: 15,
-                        color: Colors.blue.shade900,
-                      )
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
-        } else {
-          return const SizedBox.shrink();
-        }
-      });
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          });
 }
 
 class AdCreativeFunctions {
