@@ -82,7 +82,8 @@ class TwitterXHelper {
 
           //! You can easily post a tweet with uploaded media.
           var tweetResponse = await twitter.tweets.createTweet(
-              text: "$message\n$hashtags${urlLink == null ? '' : '\n$urlLink'}",
+              text:
+                  "$message${hashtags == null ? '' : '\n${hashtags.join(" ")}'}${urlLink == null ? '' : '\n$urlLink'}",
               media: x.TweetMediaParam(mediaIds: [uploadedMedia.data.id]));
 
           tweetResponseData = tweetResponse.data;
