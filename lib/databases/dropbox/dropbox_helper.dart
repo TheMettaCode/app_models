@@ -86,7 +86,7 @@ class DropboxHelper {
       try {
         // Create a reference to "file.ext"
         final pathReference =
-            "/${rootFolderName == null ? '$rootFolderName/' : ''}${dropboxFolder?.value ?? 'miscellaneous_files'}/$filenameWithExt";
+            "/applications/${rootFolderName == null ? '$rootFolderName/' : ''}${dropboxFolder?.value ?? 'miscellaneous_files'}/$filenameWithExt";
         // "/applications/scapegoats/apparel/${isNotification ? 'notification' : 'product'}_images/$filenameWithExt";
 
         appLogger.d(
