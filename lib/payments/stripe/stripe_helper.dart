@@ -950,6 +950,17 @@ class StripeHelper {
             productInfo.orderOptions ?? "No options for this order",
       };
 
+      if (productInfo.shipToRegions.isNotEmpty) {
+        var regions = productInfo.shipToRegions;
+        for (var i = 0; i < regions.length; i++) {
+          body.addAll({
+            "shipping_address_collection[allowed_countries][$i]":
+                // ignore: unnecessary_string_interpolations
+                "${regions[i].toUpperCase()}"
+          });
+        }
+      }
+
       final paymentLinkResponse = await http.post(
         Uri.parse('https://api.stripe.com/v1/payment_links'),
         headers: {
@@ -1761,6 +1772,7 @@ class GeneralProductInfo {
   String title;
   String description;
   String? orderOptions;
+  List<String> shipToRegions;
   List<String> imageUrls;
   double retailPrice;
   double? salePercentOff;
@@ -1773,6 +1785,7 @@ class GeneralProductInfo {
     required this.title,
     required this.description,
     required this.orderOptions,
+    required this.shipToRegions,
     required this.imageUrls,
     required this.retailPrice,
     required this.salePercentOff,
