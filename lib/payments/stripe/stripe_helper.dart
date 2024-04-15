@@ -1795,6 +1795,15 @@ class GeneralProductInfo {
   });
 }
 
+enum ShipToRegions {
+  unitedStates("us"),
+  canada("ca"),
+  mexico("mx");
+
+  const ShipToRegions(this.value);
+  final String value;
+}
+
 class PriceCalculations {
   double retailPrice;
   double? salePrice;
