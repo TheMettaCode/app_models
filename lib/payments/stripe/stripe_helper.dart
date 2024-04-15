@@ -46,9 +46,9 @@ class StripeHelper {
   static Future<List<StripeCustomer>> stripePaymentInit({
     required StripeSecrets secrets,
     required bool testing,
-    required String publicKey,
-    required String publicTestKey,
-    required String accountId,
+    // required String publicKey,
+    // required String publicTestKey,
+    // required String accountId,
     String? name,
     String? email,
     String? phone,
@@ -60,8 +60,9 @@ class StripeHelper {
 
     if (kIsWeb || Platform.isAndroid) {
       ///
-      strp.Stripe.publishableKey = testing ? publicTestKey : publicKey;
-      strp.Stripe.stripeAccountId = accountId;
+      strp.Stripe.publishableKey =
+          testing ? secrets.publishableTestKey! : secrets.publishableKey!;
+      strp.Stripe.stripeAccountId = secrets.accountId;
       strp.Stripe.urlScheme = 'flutterstripe';
       await strp.Stripe.instance.applySettings();
 
