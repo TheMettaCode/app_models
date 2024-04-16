@@ -1915,7 +1915,6 @@ class PriceCalculations {
     double totalForThisSale;
 
     ///
-    // bool firstPurchase = customerOrdersNotifier.value.isEmpty;
     if (isFirstPurchase) {
       salePrice = retailPrice -
           (retailPrice * (stripeFirstPurchaseDiscountPercent / 100));
