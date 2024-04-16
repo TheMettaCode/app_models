@@ -218,34 +218,4 @@ class DefaultFirebaseOptions {
         );
     }
   }
-
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAaNyJeFTrkDQqbqV3BQp6gfN_cWh8juOs',
-    appId: '1:862477657621:web:b0b2d7978e0db1b93c901c',
-    messagingSenderId: '862477657621',
-    projectId: 'scapegoats-apparel',
-    storageBucket: 'scapegoats-apparel.appspot.com',
-    authDomain: 'scapegoats-apparel.firebaseapp.com',
-    measurementId: 'G-4QQRBH30EE',
-
-    /// Added 9/6
-    trackingId: null,
-    iosBundleId: null,
-    appGroupId: null,
-  );
-
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBag5D35gead9DZz0qYFqnR-nBSFGueNBU',
-    appId: '1:862477657621:android:c617ed49c1771c603c901c',
-    messagingSenderId: '862477657621',
-    projectId: 'scapegoats-apparel',
-    storageBucket: 'scapegoats-apparel.appspot.com',
-
-    /// Added 9/6
-    authDomain: 'scapegoats-apparel.firebaseapp.com',
-    measurementId: 'G-4QQRBH30EE',
-    trackingId: null,
-    iosBundleId: null,
-    appGroupId: null,
-  );
 }
