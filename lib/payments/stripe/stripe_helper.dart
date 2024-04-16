@@ -985,6 +985,9 @@ class StripeHelper {
             '[STRIPE API CREATE PAYMENT LINK] ${testing ? 'TEST' : ''} PAYMENT LINK ROOT: $rootPaymentLink');
         final String paymentLinkId = responseJson["id"];
 
+        appLogger.f(
+            '[STRIPE API CREATE PAYMENT LINK] ${testing ? 'TEST' : ''} PRICE CALCULATIONS USED: ${priceCalculations?.toDisplayString()}');
+
         /// Get coupon and promo-code
         PromoCode? promoCode;
         await getCouponAndPromoCode(
