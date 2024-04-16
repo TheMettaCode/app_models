@@ -936,7 +936,7 @@ class StripeHelper {
         "line_items[0][quantity]": "1",
         "shipping_options[0][shipping_rate]": shippingId!,
         "billing_address_collection": "required",
-        "shipping_address_collection[allowed_countries][0]": "US",
+        // "shipping_address_collection[allowed_countries][0]": "US",
         //? "shipping_address_collection[allowed_countries][1]": "CA",
         // "after_completion[type]": "redirect",
         // "after_completion[redirect][url]": Application.paymentSuccessUrl,
@@ -960,6 +960,9 @@ class StripeHelper {
                 "${regions[i].toUpperCase()}"
           });
         }
+      } else {
+        body.addAll(
+            {"shipping_address_collection[allowed_countries][0]": "US"});
       }
 
       final paymentLinkResponse = await http.post(
