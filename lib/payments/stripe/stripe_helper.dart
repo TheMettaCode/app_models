@@ -1320,21 +1320,23 @@ class StripeHelper {
     PromoCode? newPromoCode;
 
     if (productInfo != null) {
-      var priceCalculations = await PriceCalculations.calculatePrices(
-        isFirstPurchase: isFirstPurchase,
-        memberLoggedIn: memberLoggedIn,
-        memberPercentOff: memberPercentOff,
-        retailPrice: productInfo.retailPrice,
-        salePercentOff: productInfo.salePercentOff,
-        defaultProductHandlingPrice: productInfo.defaultHandlingPrice,
-        shippingPriceMultiplier: productInfo.defaultShippingMultiplier,
-      );
+      var priceCalculations = priceCalculationsNotifier.value;
+
+      // await PriceCalculations.calculatePrices(
+      //   isFirstPurchase: isFirstPurchase,
+      //   memberLoggedIn: memberLoggedIn,
+      //   memberPercentOff: memberPercentOff,
+      //   retailPrice: productInfo.retailPrice,
+      //   salePercentOff: productInfo.salePercentOff,
+      //   defaultProductHandlingPrice: productInfo.defaultHandlingPrice,
+      //   shippingPriceMultiplier: productInfo.defaultShippingMultiplier,
+      // );
 
       appLogger.w(
-          '[STRIPE API CREATE COUPON WITH PROMO CODE] FINAL PERCENT OFF TO BE USED ==> ${priceCalculations.totalPercentOff}%');
+          '[STRIPE API CREATE COUPON WITH PROMO CODE] FINAL PERCENT OFF TO BE USED ==> ${priceCalculations?.totalPercentOff}%');
 
       if ((percentOff != null && percentOff > 0.01) ||
-          priceCalculations.totalPercentOff > 0.01) {
+          priceCalculations!.totalPercentOff > 0.01) {
         await getCoupon(
           secrets: secrets,
           testing: testing,
