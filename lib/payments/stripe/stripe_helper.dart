@@ -957,7 +957,7 @@ class StripeHelper {
           body.addAll({
             "shipping_address_collection[allowed_countries][$i]":
                 // ignore: unnecessary_string_interpolations
-                "${regions[i].value.toUpperCase()}"
+                "${regions[i].toUpperCase()}"
           });
         }
       }
@@ -1773,7 +1773,7 @@ class GeneralProductInfo {
   String title;
   String description;
   String? orderOptions;
-  List<ShipToRegions> shipToRegions;
+  List<String> shipToRegions;
   List<String> imageUrls;
   double retailPrice;
   double? salePercentOff;
