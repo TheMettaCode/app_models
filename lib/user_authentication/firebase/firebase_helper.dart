@@ -201,8 +201,8 @@ class ApplicationConfigurationData {
   final String appId;
   final String messagingSenderId;
   final String projectId;
-  final String storageBucket;
   final String authDomain;
+  final String? storageBucket;
   final String? measurementId;
   final String? trackingId;
   final String? iosBundleId;
