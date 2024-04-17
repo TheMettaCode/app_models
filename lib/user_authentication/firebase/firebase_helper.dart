@@ -180,8 +180,8 @@ class ApplicationConfigParameters {
   ApplicationConfigParameters(
       {required this.webConfig, required this.androidConfig});
 
-  final ApplicationConfigurationData webConfig;
-  final ApplicationConfigurationData androidConfig;
+  final ApplicationConfigurationData? webConfig;
+  final ApplicationConfigurationData? androidConfig;
 }
 
 class ApplicationConfigurationData {
@@ -225,9 +225,9 @@ class ApplicationConfigurationData {
 /// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions currentPlatform(
-      {required ApplicationConfigurationData webConfig,
-      required ApplicationConfigurationData androidConfig}) {
-    if (kIsWeb) {
+      {required ApplicationConfigurationData? webConfig,
+      required ApplicationConfigurationData? androidConfig}) {
+    if (kIsWeb && webConfig != null) {
       return FirebaseOptions(
         apiKey: webConfig.apiKey,
         appId: webConfig.appId,
@@ -240,21 +240,34 @@ class DefaultFirebaseOptions {
         iosBundleId: webConfig.iosBundleId,
         appGroupId: webConfig.appGroupId,
       );
+    } else if (Platform.isAndroid && androidConfig != null) {
+      return FirebaseOptions(
+        apiKey: androidConfig.apiKey,
+        appId: androidConfig.appId,
+        messagingSenderId: androidConfig.messagingSenderId,
+        projectId: androidConfig.projectId,
+        storageBucket: androidConfig.storageBucket,
+        authDomain: androidConfig.authDomain,
+        measurementId: androidConfig.messagingSenderId,
+        trackingId: androidConfig.trackingId,
+        iosBundleId: androidConfig.iosBundleId,
+        appGroupId: androidConfig.appGroupId,
+      );
     }
     switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-        return FirebaseOptions(
-          apiKey: androidConfig.apiKey,
-          appId: androidConfig.appId,
-          messagingSenderId: androidConfig.messagingSenderId,
-          projectId: androidConfig.projectId,
-          storageBucket: androidConfig.storageBucket,
-          authDomain: androidConfig.authDomain,
-          measurementId: androidConfig.messagingSenderId,
-          trackingId: androidConfig.trackingId,
-          iosBundleId: androidConfig.iosBundleId,
-          appGroupId: androidConfig.appGroupId,
-        );
+      // case TargetPlatform.android:
+      //   return FirebaseOptions(
+      //     apiKey: androidConfig.apiKey,
+      //     appId: androidConfig.appId,
+      //     messagingSenderId: androidConfig.messagingSenderId,
+      //     projectId: androidConfig.projectId,
+      //     storageBucket: androidConfig.storageBucket,
+      //     authDomain: androidConfig.authDomain,
+      //     measurementId: androidConfig.messagingSenderId,
+      //     trackingId: androidConfig.trackingId,
+      //     iosBundleId: androidConfig.iosBundleId,
+      //     appGroupId: androidConfig.appGroupId,
+      //   );
       case TargetPlatform.iOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for ios - '
