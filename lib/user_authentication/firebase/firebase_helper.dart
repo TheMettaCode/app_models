@@ -8,10 +8,11 @@ ValueNotifier<UserCredential?> firebaseUserCredentialsNotifier =
     ValueNotifier(null);
 
 class FirebaseHelper {
-  static Future<FirebaseApp?> initialize(
-      {required bool isInit,
-      required ApplicationConfigurationData webConfig,
-      required ApplicationConfigurationData androidConfig}) async {
+  static Future<FirebaseApp?> initialize({
+    required bool isInit,
+    required ApplicationConfigurationData webConfig,
+    required ApplicationConfigurationData androidConfig,
+  }) async {
     FirebaseApp? firebaseApp;
     if (kIsWeb || Platform.isAndroid) {
       /// INITIALIZE FIREBASE INTEGRATION
