@@ -704,9 +704,12 @@ class StripeHelper {
         "description": productInfo.description,
         // "features": product.otherAttributes,
         "default_price_data[currency]": "usd",
-        "default_price_data[unit_amount_decimal]": priceCalculations == null
-            ? "${(productInfo.retailPrice * 100).truncate()}"
-            : "${(priceCalculations.finalBuyPrice * 100).truncate()}",
+        "default_price_data[unit_amount_decimal]":
+            // priceCalculations == null
+            //     ?
+            "${(productInfo.retailPrice * 100).truncate()}"
+        // : "${(priceCalculations.finalBuyPrice * 100).truncate()}"
+        ,
         // "${(product.retailPrice * 100).truncate()}",
         "shippable": "true",
         "unit_label": "pc",
@@ -753,7 +756,8 @@ class StripeHelper {
           secrets: secrets,
           testing: testing,
           productInfo: productInfo,
-          priceToCheck: priceCalculations!.finalBuyPrice,
+          priceToCheck: priceCalculations!.retailPrice,
+          // priceToCheck: priceCalculations!.finalBuyPrice,
         );
         appLogger.d(
             '[[ STRIPE API CREATE PRICE ]] RETURNED PRICE OBJECT IS: ${price?.toJson().toString()}');
@@ -764,14 +768,17 @@ class StripeHelper {
 
     if (createNewPrice || price == null) {
       try {
+        // appLogger.d(
+        //     '[[ STRIPE API CREATE PRICE ]] CURRENT PRICE OBJECT IS: ${price?.toJson().toString()}, ATTEMPTING TO CREATE${testing ? ' TEST' : ''} PRICE WITH ${priceCalculations?.finalBuyPrice}');
         appLogger.d(
-            '[[ STRIPE API CREATE PRICE ]] CURRENT PRICE OBJECT IS: ${price?.toJson().toString()}, ATTEMPTING TO CREATE${testing ? ' TEST' : ''} PRICE WITH ${priceCalculations?.finalBuyPrice}');
+            '[[ STRIPE API CREATE PRICE ]] CURRENT PRICE OBJECT IS: ${price?.toJson().toString()}, ATTEMPTING TO CREATE${testing ? ' TEST' : ''} PRICE WITH ${priceCalculations?.retailPrice}');
 
         //Request body
         Map<String, String> priceBody = {
           // "product": productInfo.id,
           "unit_amount":
-              (priceCalculations!.finalBuyPrice * 100).toStringAsFixed(0),
+              (priceCalculations!.retailPrice * 100).toStringAsFixed(0),
+          // (priceCalculations!.finalBuyPrice * 100).toStringAsFixed(0),
           "currency": "usd",
           "product_data[name]": productInfo.title,
         };
@@ -1208,7 +1215,7 @@ class StripeHelper {
             retailPrice: currentPriceCalculations.retailPrice,
             salePrice: currentPriceCalculations.salePrice,
             memberPrice: currentPriceCalculations.memberPrice,
-            finalBuyPrice: currentPriceCalculations.finalBuyPrice,
+            // finalBuyPrice: currentPriceCalculations.finalBuyPrice,
             totalPercentOff: checkoutSessionFinalPercentOff,
             shippingPrice: currentPriceCalculations.shippingPrice,
             subtotal: checkoutSessionFinalSubtotal,
@@ -1816,7 +1823,7 @@ class PriceCalculations {
   double retailPrice;
   double? salePrice;
   double? memberPrice;
-  double finalBuyPrice;
+  // double finalBuyPrice;
   double totalPercentOff;
   double shippingPrice;
   double subtotal;
@@ -1826,7 +1833,7 @@ class PriceCalculations {
     required this.retailPrice,
     required this.salePrice,
     required this.memberPrice,
-    required this.finalBuyPrice,
+    // required this.finalBuyPrice,
     required this.totalPercentOff,
     required this.shippingPrice,
     required this.subtotal,
@@ -1838,7 +1845,7 @@ class PriceCalculations {
         retailPrice: json["retail_price"],
         salePrice: json["sale_price"],
         memberPrice: json["member_price"],
-        finalBuyPrice: json["final_price"],
+        // finalBuyPrice: json["final_price"],
         totalPercentOff: json["total_percent"],
         shippingPrice: json["shipping_price"],
         subtotal: json["subtotal"],
@@ -1849,7 +1856,7 @@ class PriceCalculations {
         "retail_price": retailPrice,
         "sale_price": salePrice,
         "member_price": memberPrice,
-        "final_price": finalBuyPrice,
+        // "final_price": finalBuyPrice,
         "total_percent": totalPercentOff,
         "shipping_price": shippingPrice,
         "subtotal": subtotal,
@@ -1860,7 +1867,7 @@ class PriceCalculations {
         retailPrice.toStringAsFixed(2),
         salePrice == null ? "" : salePrice!.toStringAsFixed(2),
         memberPrice == null ? "" : memberPrice!.toStringAsFixed(2),
-        finalBuyPrice.toStringAsFixed(2),
+        // finalBuyPrice.toStringAsFixed(2),
         totalPercentOff.toStringAsFixed(2),
         shippingPrice.toStringAsFixed(2),
         subtotal.toStringAsFixed(2),
@@ -1872,7 +1879,7 @@ class PriceCalculations {
         retailPrice: double.parse(thisOrder[0]),
         salePrice: thisOrder[1].isEmpty ? null : double.parse(thisOrder[1]),
         memberPrice: thisOrder[2].isEmpty ? null : double.parse(thisOrder[2]),
-        finalBuyPrice: double.parse(thisOrder[3]),
+        // finalBuyPrice: double.parse(thisOrder[3]),
         totalPercentOff: double.parse(thisOrder[4]),
         shippingPrice: double.parse(thisOrder[5]),
         subtotal: double.parse(thisOrder[6]),
@@ -1885,7 +1892,8 @@ class PriceCalculations {
   toString() => toGSheetsList().join(stripePriceCalculationsDelimiter);
 
   toDisplayString() =>
-      "Buy Price: \$${finalBuyPrice.toStringAsFixed(2)}  Discount: ${totalPercentOff.round()}%  Shipping: \$${shippingPrice.toStringAsFixed(2)}";
+      "Retail Price: \$${retailPrice.toStringAsFixed(2)}  Discount: ${totalPercentOff.round()}%  Shipping: \$${shippingPrice.toStringAsFixed(2)}";
+  // "Buy Price: \$${finalBuyPrice.toStringAsFixed(2)}  Discount: ${totalPercentOff.round()}%  Shipping: \$${shippingPrice.toStringAsFixed(2)}";
 
   factory PriceCalculations.fromString(String string) =>
       PriceCalculations.fromGSheetsList(
@@ -1962,7 +1970,7 @@ class PriceCalculations {
         memberPrice: memberPrice,
         totalPercentOff: totalPercentOff,
         shippingPrice: shippingPrice,
-        finalBuyPrice: finalBuyPrice,
+        // finalBuyPrice: finalBuyPrice,
         subtotal: subtotal,
         totalForThisSale: totalForThisSale);
 
