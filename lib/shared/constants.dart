@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 
 /// COMMON PACKAGES
@@ -9,6 +10,25 @@ const int appApiResponseTimeoutSeconds = 15;
 
 /// GENERAL CONSTANTS
 const double maxContentWidth = 800;
+
+/// DATE-TIME FORMATTING
+final DateFormat formatter = DateFormat.yMEd();
+final DateFormat timeFormatter = DateFormat('h:mm a');
+final DateFormat localTimeFormatter = DateFormat.jm();
+final DateFormat dateWithTimeFormatter = DateFormat('E, M/d h:mm a');
+final DateFormat dateWithTimeOnlyFormatter = DateFormat('E, M/d h:mm');
+final DateFormat dateWithTimeAndSecondsFormatter =
+    DateFormat('E, M/d h:mm:ss a');
+final DateFormat dateWithDayFormatter = DateFormat('E, M/d');
+final DateFormat dateWithDayAndYearFormatter = DateFormat('E, M/d/y');
+final DateFormat monthDayYearFormatter = DateFormat('M/dd/yyyy');
+final DateFormat dateFormatter = DateFormat('M/d');
+final DateFormat monthYearFormatter = DateFormat.yM();
+
+/// GENERAL NUMBER FORMATTING
+final NumberFormat currency = NumberFormat.simpleCurrency();
+currencyFormat(double dollars) => currency.format(dollars);
+final DateFormat duration = DateFormat("mm:ss");
 
 /// PRODUCT CONSTANTS
 const double defaultShippingMultiplier = 0.1;

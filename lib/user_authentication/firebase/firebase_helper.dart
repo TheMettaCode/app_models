@@ -10,6 +10,7 @@ ValueNotifier<UserCredential?> firebaseUserCredentialsNotifier =
 class FirebaseHelper {
   static Future<FirebaseApp?> initialize({
     required bool isInit,
+    // required ApplicationConfigurationData configData,
     required ApplicationConfigParameters configParameters,
   }) async {
     FirebaseApp? firebaseApp;
@@ -224,9 +225,10 @@ class ApplicationConfigurationData {
 /// );
 /// ```
 class DefaultFirebaseOptions {
-  static FirebaseOptions currentPlatform(
-      {required ApplicationConfigurationData? webConfig,
-      required ApplicationConfigurationData? androidConfig}) {
+  static FirebaseOptions currentPlatform({
+    required ApplicationConfigurationData? webConfig,
+    required ApplicationConfigurationData? androidConfig,
+  }) {
     if (kIsWeb && webConfig != null) {
       return FirebaseOptions(
         apiKey: webConfig.apiKey,
