@@ -703,7 +703,9 @@ class OnesignalHelper {
     required List<String> toEmails,
     required String fromName,
     required String replyToEmail,
-    required String oneSignalTemplateId,
+    required String oneSignalCustomerEmailTemplateId,
+    required String oneSignalClientEmailTemplateId,
+    required String oneSignalClientPushTemplateId,
     String? toName,
   }) async {
     ///
@@ -748,7 +750,7 @@ class OnesignalHelper {
       var customerBody = jsonEncode({
         "app_id": secrets.appId,
         "template_id":
-            oneSignalTemplateId, //   OnesignalTemplateIds.successfulProductPurchaseCustomerEmail.value,
+            oneSignalCustomerEmailTemplateId, //   OnesignalTemplateIds.successfulProductPurchaseCustomerEmail.value,
         "email_subject": subject,
         "email_from_name": fromName,
         // "email_from_address": AppClient.supportEmail,
@@ -777,7 +779,7 @@ class OnesignalHelper {
       var clientBody = jsonEncode({
         "app_id": secrets.appId,
         "template_id":
-            oneSignalTemplateId, //    OnesignalTemplateIds.successfulProductPurchaseClientEmail.value,
+            oneSignalClientEmailTemplateId, //    OnesignalTemplateIds.successfulProductPurchaseClientEmail.value,
         "email_subject":
             "🎉 An order for ${orderInfo.productName} has been placed!",
         "email_from_name": fromName,
@@ -804,7 +806,7 @@ class OnesignalHelper {
       var pushNotificationBody = jsonEncode({
         "app_id": secrets.appId,
         "template_id":
-            oneSignalTemplateId, //   OnesignalTemplateIds.successfulProductPurchaseClientPush.value,
+            oneSignalClientPushTemplateId, //   OnesignalTemplateIds.successfulProductPurchaseClientPush.value,
         "filters": [
           {
             "field": "tag",
