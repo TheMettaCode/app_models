@@ -1915,11 +1915,12 @@ class PriceCalculations {
     ///
     double? salePrice;
     double? memberPrice;
-    double finalBuyPrice = retailPrice;
+    // double finalBuyPrice = retailPrice;
     double totalPercentOff = 0;
     double shippingPrice =
         defaultProductHandlingPrice + (retailPrice * shippingPriceMultiplier);
-    double subtotal = finalBuyPrice - (finalBuyPrice * (totalPercentOff / 100));
+    double subtotal = retailPrice - (retailPrice * (totalPercentOff / 100));
+    // double subtotal = finalBuyPrice - (finalBuyPrice * (totalPercentOff / 100));
     double totalForThisSale;
 
     ///
@@ -1928,14 +1929,16 @@ class PriceCalculations {
           (retailPrice * (stripeFirstPurchaseDiscountPercent / 100));
 
       totalPercentOff = totalPercentOff + stripeFirstPurchaseDiscountPercent;
-      finalBuyPrice = salePrice;
-      subtotal = finalBuyPrice - (finalBuyPrice * (totalPercentOff / 100));
+      // finalBuyPrice = salePrice;
+      subtotal = retailPrice - (retailPrice * (totalPercentOff / 100));
+      // subtotal = finalBuyPrice - (finalBuyPrice * (totalPercentOff / 100));
     } else if (onSale) {
-      salePrice = retailPrice - (retailPrice * (salePercentOff / 100));
-
       totalPercentOff = totalPercentOff + salePercentOff;
-      finalBuyPrice = salePrice;
-      subtotal = finalBuyPrice - (finalBuyPrice * (totalPercentOff / 100));
+      salePrice = retailPrice - (retailPrice * (totalPercentOff / 100));
+      // finalBuyPrice = salePrice;
+      subtotal = salePrice;
+
+      // subtotal = finalBuyPrice - (finalBuyPrice * (totalPercentOff / 100));
 
       if (memberLoggedIn && memberPercentOff != null && memberPercentOff > 0) {
         memberPrice = salePrice - (salePrice * (memberPercentOff / 100));
@@ -1944,25 +1947,28 @@ class PriceCalculations {
             ((salePrice - memberPrice) / ((salePrice + memberPrice) / 2) * 100);
 
         totalPercentOff = totalPercentOff + additionalPercentOff;
-        finalBuyPrice = memberPrice;
-        subtotal = finalBuyPrice - (finalBuyPrice * (totalPercentOff / 100));
+        // finalBuyPrice = memberPrice;
+        subtotal = retailPrice - (retailPrice * (totalPercentOff / 100));
+        // subtotal = finalBuyPrice - (finalBuyPrice * (totalPercentOff / 100));
       }
     } else if (!onSale &&
         memberLoggedIn &&
         memberPercentOff != null &&
         memberPercentOff > 0) {
+      totalPercentOff = memberPercentOff;
       memberPrice = retailPrice - ((retailPrice * memberPercentOff) / 100);
 
-      totalPercentOff = memberPercentOff;
-      finalBuyPrice = memberPrice;
-      subtotal = finalBuyPrice - (finalBuyPrice * (totalPercentOff / 100));
+      // finalBuyPrice = memberPrice;
+      subtotal = memberPrice;
+      // subtotal = finalBuyPrice - (finalBuyPrice * (totalPercentOff / 100));
     }
 
     totalForThisSale = subtotal + shippingPrice;
 
     ///
     appLogger.w(
-        '[[ CALCULATE PRICES FUNCTION ]] RETAIL PRICE ==> \$$retailPrice\n[[ CALCULATE PRICES FUNCTION ]] IS FIRST PURCHASE? ==> $isFirstPurchase\n[[ CALCULATE PRICES FUNCTION ]] SALE PRICE ==> ${salePrice == null ? "Not on sale" : "\$$salePrice"}\n[[ CALCULATE PRICES FUNCTION ]] MEMBER PRICE ==> ${memberPrice == null ? "Not a member" : "\$$memberPrice"}\n[[ CALCULATE PRICES FUNCTION ]] FINAL BUY PRICE ==> \$$finalBuyPrice\n[[ CALCULATE PRICES FUNCTION ]] TOTAL %OFF ==> $totalPercentOff%\n[[ CALCULATE PRICES FUNCTION ]] SUBTOTAL ==> \$$subtotal\n[[ CALCULATE PRICES FUNCTION ]] SHIPPING PRICE ==> \$$shippingPrice\n[[ CALCULATE PRICES FUNCTION ]] TOTAL THIS SALE ==> \$$totalForThisSale');
+        // '[[ CALCULATE PRICES FUNCTION ]] RETAIL PRICE ==> \$$retailPrice\n[[ CALCULATE PRICES FUNCTION ]] IS FIRST PURCHASE? ==> $isFirstPurchase\n[[ CALCULATE PRICES FUNCTION ]] SALE PRICE ==> ${salePrice == null ? "Not on sale" : "\$$salePrice"}\n[[ CALCULATE PRICES FUNCTION ]] MEMBER PRICE ==> ${memberPrice == null ? "Not a member" : "\$$memberPrice"}\n[[ CALCULATE PRICES FUNCTION ]] FINAL BUY PRICE ==> \$$finalBuyPrice\n[[ CALCULATE PRICES FUNCTION ]] TOTAL %OFF ==> $totalPercentOff%\n[[ CALCULATE PRICES FUNCTION ]] SUBTOTAL ==> \$$subtotal\n[[ CALCULATE PRICES FUNCTION ]] SHIPPING PRICE ==> \$$shippingPrice\n[[ CALCULATE PRICES FUNCTION ]] TOTAL THIS SALE ==> \$$totalForThisSale');
+        '[[ CALCULATE PRICES FUNCTION ]] RETAIL PRICE ==> \$$retailPrice\n[[ CALCULATE PRICES FUNCTION ]] IS FIRST PURCHASE? ==> $isFirstPurchase\n[[ CALCULATE PRICES FUNCTION ]] SALE PRICE ==> ${salePrice == null ? "Not on sale" : "\$$salePrice"}\n[[ CALCULATE PRICES FUNCTION ]] MEMBER PRICE ==> ${memberPrice == null ? "Not a member" : "\$$memberPrice"}\n[[ CALCULATE PRICES FUNCTION ]] TOTAL %OFF ==> $totalPercentOff%\n[[ CALCULATE PRICES FUNCTION ]] SUBTOTAL ==> \$$subtotal\n[[ CALCULATE PRICES FUNCTION ]] SHIPPING PRICE ==> \$$shippingPrice\n[[ CALCULATE PRICES FUNCTION ]] TOTAL THIS SALE ==> \$$totalForThisSale');
 
     var priceCalculations = PriceCalculations(
         retailPrice: retailPrice,
