@@ -1823,7 +1823,6 @@ class PriceCalculations {
   double retailPrice;
   double? salePrice;
   double? memberPrice;
-  // double finalBuyPrice;
   double totalPercentOff;
   double shippingPrice;
   double subtotal;
@@ -1833,7 +1832,6 @@ class PriceCalculations {
     required this.retailPrice,
     required this.salePrice,
     required this.memberPrice,
-    // required this.finalBuyPrice,
     required this.totalPercentOff,
     required this.shippingPrice,
     required this.subtotal,
@@ -1845,7 +1843,6 @@ class PriceCalculations {
         retailPrice: json["retail_price"],
         salePrice: json["sale_price"],
         memberPrice: json["member_price"],
-        // finalBuyPrice: json["final_price"],
         totalPercentOff: json["total_percent"],
         shippingPrice: json["shipping_price"],
         subtotal: json["subtotal"],
@@ -1856,7 +1853,6 @@ class PriceCalculations {
         "retail_price": retailPrice,
         "sale_price": salePrice,
         "member_price": memberPrice,
-        // "final_price": finalBuyPrice,
         "total_percent": totalPercentOff,
         "shipping_price": shippingPrice,
         "subtotal": subtotal,
@@ -1867,7 +1863,6 @@ class PriceCalculations {
         retailPrice.toStringAsFixed(2),
         salePrice == null ? "" : salePrice!.toStringAsFixed(2),
         memberPrice == null ? "" : memberPrice!.toStringAsFixed(2),
-        // finalBuyPrice.toStringAsFixed(2),
         totalPercentOff.toStringAsFixed(2),
         shippingPrice.toStringAsFixed(2),
         subtotal.toStringAsFixed(2),
@@ -1879,12 +1874,11 @@ class PriceCalculations {
         retailPrice: double.parse(thisOrder[0]),
         salePrice: thisOrder[1].isEmpty ? null : double.parse(thisOrder[1]),
         memberPrice: thisOrder[2].isEmpty ? null : double.parse(thisOrder[2]),
-        // finalBuyPrice: double.parse(thisOrder[3]),
-        totalPercentOff: double.parse(thisOrder[4]),
-        shippingPrice: double.parse(thisOrder[5]),
-        subtotal: double.parse(thisOrder[6]),
+        totalPercentOff: double.parse(thisOrder[3]),
+        shippingPrice: double.parse(thisOrder[4]),
+        subtotal: double.parse(thisOrder[5]),
         totalForThisSale: double.parse(
-          thisOrder[7],
+          thisOrder[6],
         ),
       );
 
