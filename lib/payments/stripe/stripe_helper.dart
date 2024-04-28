@@ -1980,7 +1980,7 @@ class PriceCalculations {
     return priceCalculations;
   }
 
-  priceCalculationsCard() {
+  static Widget priceCalculationsCard({ShapeBorder? cardShape}) {
     return ValueListenableBuilder(
         valueListenable: priceCalculationsNotifier,
         builder: (context, priceCalculations, child) {
@@ -1991,7 +1991,7 @@ class PriceCalculations {
               ? const SizedBox.shrink()
               : Flash(
                   child: Card(
-                    // shape: Widgets.defaultRectangleBorder(context: context),
+                    shape: cardShape,
                     color: Theme.of(context).colorScheme.error,
                     child: Padding(
                       padding: const EdgeInsets.all(10),
