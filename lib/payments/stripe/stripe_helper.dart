@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as strp;
@@ -1977,5 +1978,107 @@ class PriceCalculations {
     priceCalculationsNotifier.value = priceCalculations;
 
     return priceCalculations;
+  }
+
+  priceCalculationsCard() {
+    return ValueListenableBuilder(
+        valueListenable: priceCalculationsNotifier,
+        builder: (context, priceCalculations, child) {
+          var tertiaryColor = Theme.of(context).colorScheme.tertiary;
+
+          ///
+          return priceCalculations == null
+              ? const SizedBox.shrink()
+              : Flash(
+                  child: Card(
+                    // shape: Widgets.defaultRectangleBorder(context: context),
+                    color: Theme.of(context).colorScheme.error,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Table(children: [
+                        TableRow(children: [
+                          Text(
+                            'Price (Tax Included)'.toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            '${currencyFormat(priceCalculations.retailPrice)}'
+                                .toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ]),
+                        TableRow(children: [
+                          Text(
+                            'Discount'.toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            '${priceCalculations.totalPercentOff.toStringAsFixed(0)}%',
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ]),
+                        TableRow(children: [
+                          Text(
+                            'Subtotal'.toUpperCase(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            '${currencyFormat(priceCalculations.subtotal)}'
+                                .toUpperCase(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ]),
+                        const TableRow(children: [Divider(), Divider()]),
+                        TableRow(children: [
+                          Text(
+                            'Shipping & Handling'.toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            '${currencyFormat(priceCalculations.shippingPrice)}'
+                                .toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ]),
+                        TableRow(children: [
+                          Text(
+                            'Order Total'.toUpperCase(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: tertiaryColor,
+                            ),
+                          ),
+                          Text(
+                            '${currencyFormat(priceCalculations.totalForThisSale)}'
+                                .toUpperCase(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: tertiaryColor,
+                            ),
+                          ),
+                        ]),
+                      ]),
+                    ),
+                  ),
+                );
+        });
   }
 }
