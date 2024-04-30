@@ -141,6 +141,20 @@ class StripeProduct {
       };
 }
 
+enum SGMMetadataKeys {
+  /// application => String [scapegoats_music]
+  /// featured => bool [true or false]
+  /// price_string => String [99.99]
+  /// type => String [product or service]
+  application("application"),
+  featured("featured"),
+  priceString("price_string"),
+  type("type");
+
+  const SGMMetadataKeys(this.value);
+  final String value;
+}
+
 // class StripeProductMetadata {
 //   StripeProductMetadata({
 //     // required this.credits,
