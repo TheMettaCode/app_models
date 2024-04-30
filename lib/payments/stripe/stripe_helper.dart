@@ -53,7 +53,7 @@ class StripeHelper {
     String? name,
     String? email,
     String? phone,
-    Map<String, String>? metadataKeyAndValue,
+    Map<String, dynamic>? metadata,
   }) async {
     List<StripeCustomer> existingStripeCustomers = [];
     appLogger.d(
@@ -74,7 +74,7 @@ class StripeHelper {
         testing: testing,
         name: name,
         email: email,
-        metadataKeyAndValue: metadataKeyAndValue,
+        metadata: metadata,
       ).then((customers) {
         if (customers.isNotEmpty) {
           existingStripeCustomers = customers;
@@ -451,7 +451,7 @@ class StripeHelper {
     String? name, // John Doe
     String? email, // name@email.com
     String? phone, // +19999999999
-    Map<String, String>? metadataKeyAndValue, //
+    Map<String, dynamic>? metadata, //
   }) async {
     List<StripeCustomer> existingStripeCustomers = [];
     String? queryUrl;
@@ -460,10 +460,7 @@ class StripeHelper {
         '[STRIPE API STRIPE CUSTOMER SEARCH] ${testing ? 'TEST' : ''} BEGINNING STRIPE CUSTOMER SEARCH...');
 
     ///
-    if (name != null ||
-        email != null ||
-        phone != null ||
-        metadataKeyAndValue != null) {
+    if (name != null || email != null || phone != null || metadata != null) {
       queryUrl = email != null
           ? "https://api.stripe.com/v1/customers/search?query=email:'$email'"
           : name != null
@@ -472,14 +469,14 @@ class StripeHelper {
                   ? "https://api.stripe.com/v1/customers/search?query=phone:'$phone'"
                   // : createdAfterDate != null
                   //     ? "https://api.stripe.com/v1/customers/search?query=created:'$createdAfterDate'"
-                  : metadataKeyAndValue != null &&
-                          metadataKeyAndValue.entries.first.key.isNotEmpty &&
-                          metadataKeyAndValue.entries.first.value.isNotEmpty
-                      ? "https://api.stripe.com/v1/customers/search?query=metadata['${metadataKeyAndValue.entries.first.key}']:'${metadataKeyAndValue.entries.first.value}'"
+                  : metadata != null &&
+                          metadata.entries.first.key.isNotEmpty &&
+                          metadata.entries.first.value.isNotEmpty
+                      ? "https://api.stripe.com/v1/customers/search?query=metadata['${metadata.entries.first.key}']:'${metadata.entries.first.value}'"
                       : null;
 
       appLogger.f(
-          "[STRIPE API STRIPE CUSTOMER SEARCH] ${testing ? 'TEST' : ''} SEARCHING FOR STRIPE CUSTOMER WITH QUERY STRING => $queryUrl\n\nName: $name\nEmail: $email\nPhone: $phone\nMetaData: $metadataKeyAndValue");
+          "[STRIPE API STRIPE CUSTOMER SEARCH] ${testing ? 'TEST' : ''} SEARCHING FOR STRIPE CUSTOMER WITH QUERY STRING => $queryUrl\n\nName: $name\nEmail: $email\nPhone: $phone\nMetaData: $metadata");
 
       if (queryUrl != null) {
         try {

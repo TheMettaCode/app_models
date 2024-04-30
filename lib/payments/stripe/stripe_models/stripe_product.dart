@@ -59,7 +59,7 @@ class StripeProduct {
     required this.description,
     required this.images,
     required this.livemode,
-    // required this.metadata,
+    required this.metadata,
     required this.name,
     required this.packageDimensions,
     required this.shippable,
@@ -81,6 +81,7 @@ class StripeProduct {
   final List<String> images;
   final bool livemode;
   // final StripeProductMetadata? metadata;
+  final Map<String, dynamic>? metadata;
   final String name;
   final dynamic packageDimensions;
   final bool shippable;
@@ -103,9 +104,9 @@ class StripeProduct {
         description: json["description"] ?? "",
         images: List<String>.from(json["images"].map((x) => x)),
         livemode: json["livemode"] ?? false,
-        // metadata: json["metadata"] == null
-        //     ? null
-        //     : StripeProductMetadata.fromJson(json["metadata"]),
+        metadata: json["metadata"] == null
+            ? null
+            : Map<String, dynamic>.from(json["metadata"]),
         name: json["name"],
         packageDimensions: json["package_dimensions"] ?? "",
         shippable: json["shippable"] ?? false,
@@ -127,7 +128,7 @@ class StripeProduct {
         "description": description,
         "images": List<dynamic>.from(images.map((x) => x)),
         "livemode": livemode,
-        // "metadata": metadata?.toJson(),
+        "metadata": metadata,
         "name": name,
         "package_dimensions": packageDimensions,
         "shippable": shippable,
