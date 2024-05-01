@@ -680,8 +680,16 @@ class StripeHelper {
       "active": "true"
       // "metadata[application]": "scapegoats_music"
     };
+
+    if (metadataCheckKey != null && metadataCheckValue != null) {
+      data.addAll({"metadata[$metadataCheckKey]": metadataCheckValue});
+    }
+
     if (productIds != null && productIds.isNotEmpty) {
-      data.addAll({"ids[]": productIds.toString()});
+      for (var i = 0; i < productIds.length; i++) {
+        data.addAll({"ids[$i]": productIds[i]});
+        appLogger.w('[STRIPE API] STRIPE PRODUCT ID ${productIds[i]} ADDED.');
+      }
     }
 
     try {
