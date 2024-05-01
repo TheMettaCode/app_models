@@ -104,6 +104,7 @@ class StripeHelper {
     required GeneralPurchaserInfo purchaserInfo,
     required GeneralProductInfo productInfo,
     String currency = "usd",
+    bool stripePurchaseRequired = true,
   }) async {
     bool paymentSuccessful = false;
     CheckoutSessionsDatum? checkoutSession;
@@ -117,7 +118,7 @@ class StripeHelper {
       purchaserInfo: purchaserInfo,
     );
 
-    if ((stripeCustomer != null)) {
+    if ((stripePurchaseRequired && stripeCustomer != null)) {
       try {
         appLogger.d(
             '[[ STRIPE PAYMENT API PROCESS WEB PAYMENT ]] BEGINNING WEB${testing ? ' TEST' : 'LIVE'} PAYMENT PROCESSING...');
@@ -300,7 +301,7 @@ class StripeHelper {
       }
     } else {
       appLogger.e(
-          '[[ STRIPE PAYMENT API PAYMENT SHEET ]] UNABLE TO RETRIVE STRIPE CUSTOMER. STRIPE CUSTOMER RETURNED NULL.');
+          '[[ STRIPE PAYMENT API PAYMENT SHEET ]] STRIPE PURCHASE NOT REQUIRED FOR THIS TRANSACTION OR STRIPE CUSTOMER RETURNED NULL.');
     }
 
     return (paymentSuccessful, checkoutSession, updatedPriceCalculations);
