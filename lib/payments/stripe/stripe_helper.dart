@@ -676,7 +676,7 @@ class StripeHelper {
     //   HttpHeaders.authorizationHeader: "Bearer $stripeSecretApiKey",
     // };
 
-    Map<String, String> data = {
+    Map<String, dynamic> data = {
       "active": "true"
       // "metadata[application]": "scapegoats_music"
     };
@@ -686,11 +686,12 @@ class StripeHelper {
     }
 
     if (productIds != null && productIds.isNotEmpty) {
-      for (var i = 0; i < productIds.length; i++) {
-        data.addAll({"id[$i]": productIds[i]});
-        appLogger.f(
-            '[STRIPE API] STRIPE PRODUCT ID ${productIds[i]} ADDED TO QUERY DATA.');
-      }
+      data.addAll({"ids[]": productIds});
+      // for (var i = 0; i < productIds.length; i++) {
+      //   data.addAll({"id[$i]": productIds[i]});
+      //   appLogger.f(
+      //       '[STRIPE API] STRIPE PRODUCT ID ${productIds[i]} ADDED TO QUERY DATA.');
+      // }
     }
 
     try {
