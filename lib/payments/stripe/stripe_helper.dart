@@ -677,12 +677,12 @@ class StripeHelper {
     // };
 
     Map<String, String> data = {
-      "active": "true",
-      "metadata[application]": "scapegoats_music"
+      "active": "true"
+      // "metadata[application]": "scapegoats_music"
     };
-    // if (productIds != null && productIds.isNotEmpty) {
-    //   data.addAll({"ids[]": productIds});
-    // }
+    if (productIds != null && productIds.isNotEmpty) {
+      data.addAll({"ids[]": productIds.toString()});
+    }
 
     try {
       var response = await http
