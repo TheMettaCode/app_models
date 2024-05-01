@@ -687,7 +687,7 @@ class StripeHelper {
 
     if (productIds != null && productIds.isNotEmpty) {
       for (var i = 0; i < productIds.length; i++) {
-        data.addAll({"ids[$i]": productIds[i]});
+        data.addAll({"id[$i]": productIds[i]});
         appLogger.f(
             '[STRIPE API] STRIPE PRODUCT ID ${productIds[i]} ADDED TO QUERY DATA.');
       }
