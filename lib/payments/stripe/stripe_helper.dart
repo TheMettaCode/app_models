@@ -678,7 +678,7 @@ class StripeHelper {
 
     Map<String, dynamic> data = {"active": "true"};
     if (productIds != null && productIds.isNotEmpty) {
-      data.addAll({"ids[]": productIds});
+      data.addAll({"ids[]": productIds.toString()});
     }
 
     try {
