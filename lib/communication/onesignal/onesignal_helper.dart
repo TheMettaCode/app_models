@@ -471,7 +471,7 @@ class OnesignalHelper {
     required String replyToEmail,
     required String subject,
     required String emailBody,
-    required String oneSignalTemplateId,
+    String? oneSignalTemplateId,
     bool? includeUnsubscribed,
     String? imageUrl,
     String? preHeader,
@@ -493,10 +493,8 @@ class OnesignalHelper {
       appLogger.d('[[ ONESIGNAL API ]] ATTEMPTING TO SEND EMAIL NOTIFICATION');
 
       //Request body
-      var emailNotificationBody = jsonEncode({
+      var emailNotificationBody = {
         "app_id": secrets.appId,
-        "template_id":
-            oneSignalTemplateId, // OnesignalTemplateIds.generalEmail.value,
         "email_subject": subject,
         "email_from_name": fromName,
         "email_reply_to_address": replyToEmail,
@@ -507,7 +505,11 @@ class OnesignalHelper {
         "included_segments": ["Subscribed Users"],
         "include_unsubscribed": includeUnsubscribed,
         "custom_data": customData
-      });
+      };
+
+      if (oneSignalTemplateId != null && oneSignalTemplateId.isNotEmpty) {
+        emailNotificationBody.addAll({"template_id": oneSignalTemplateId});
+      }
 
       //Make post request to Stripe
       var emailResponse = await http.post(
@@ -517,7 +519,7 @@ class OnesignalHelper {
           // 'Authorization': 'Basic ${testing ? restApiKey : restApiKey}',
           'Content-Type': 'application/json; charset=utf-8',
         },
-        body: emailNotificationBody,
+        body: jsonEncode(emailNotificationBody),
       );
       appLogger
           .d('[[ ONESIGNAL API ]] EMAIL SEND RESPONSE: ${emailResponse.body}');
@@ -536,7 +538,7 @@ class OnesignalHelper {
     required String replyToEmail,
     required String subject,
     required String emailBody,
-    required String oneSignalTemplateId,
+    String? oneSignalTemplateId,
     bool? includeUnsubscribed,
     String? toName,
     String? imageUrl,
@@ -559,10 +561,8 @@ class OnesignalHelper {
       appLogger.d('[[ ONESIGNAL API ]] ATTEMPTING TO SEND EMAIL NOTIFICATION');
 
       //Request body
-      var emailNotificationBody = jsonEncode({
+      var emailNotificationBody = {
         "app_id": secrets.appId,
-        "template_id":
-            oneSignalTemplateId, // OnesignalTemplateIds.generalEmail.value,
         "email_subject": subject,
         "email_from_name": fromName,
         "email_reply_to_address": replyToEmail,
@@ -576,7 +576,11 @@ class OnesignalHelper {
         "include_email_tokens": toEmails,
         "include_unsubscribed": includeUnsubscribed,
         "custom_data": customData
-      });
+      };
+
+      if (oneSignalTemplateId != null && oneSignalTemplateId.isNotEmpty) {
+        emailNotificationBody.addAll({"template_id": oneSignalTemplateId});
+      }
 
       //Make post request to Stripe
       var emailResponse = await http.post(
@@ -585,7 +589,7 @@ class OnesignalHelper {
           'Authorization': 'Basic ${secrets.apiKey}',
           'Content-Type': 'application/json; charset=utf-8',
         },
-        body: emailNotificationBody,
+        body: jsonEncode(emailNotificationBody),
       );
       appLogger
           .d('[[ ONESIGNAL API ]] EMAIL SEND RESPONSE: ${emailResponse.body}');
@@ -600,7 +604,7 @@ class OnesignalHelper {
     required String appUserId,
     required String subject,
     required String body,
-    required String oneSignalTemplateId,
+    String? oneSignalTemplateId,
     bool? includeUnsubscribed,
     String? imageUrl,
   }) async {
@@ -617,14 +621,16 @@ class OnesignalHelper {
 
     try {
       //Request body
-      var pushNotificationBody = jsonEncode({
+      var pushNotificationBody = {
         "app_id": secrets.appId,
-        "template_id":
-            oneSignalTemplateId, //  OnesignalTemplateIds.generalPush.value,
         "custom_data": customData,
         "included_segments": ["Subscribed Users"],
         // "android_group": OnesignalPushGroups.promotion.value,
-      });
+      };
+
+      if (oneSignalTemplateId != null && oneSignalTemplateId.isNotEmpty) {
+        pushNotificationBody.addAll({"template_id": oneSignalTemplateId});
+      }
 
       /// Make post request to Stripe
       var pushResponse = await http.post(
@@ -634,7 +640,7 @@ class OnesignalHelper {
           'accept': 'application/json',
           'content-Type': 'application/json',
         },
-        body: pushNotificationBody,
+        body: jsonEncode(pushNotificationBody),
       );
       appLogger
           .d('[[ ONESIGNAL API ]] PUSH SEND RESPONSE: ${pushResponse.body}');
@@ -649,7 +655,7 @@ class OnesignalHelper {
     required String appUserId,
     required String subject,
     required String body,
-    required String oneSignalTemplateId,
+    String? oneSignalTemplateId,
     bool? includeUnsubscribed,
     String? imageUrl,
   }) async {
@@ -667,14 +673,16 @@ class OnesignalHelper {
 
     try {
       //Request body
-      var pushNotificationBody = jsonEncode({
+      var pushNotificationBody = {
         "app_id": secrets.appId,
-        "template_id":
-            oneSignalTemplateId, //  OnesignalTemplateIds.promotionPush.value,
         "custom_data": customData,
         "included_segments": ["Subscribed Users"],
         // "android_group": OnesignalPushGroups.promotion.value,
-      });
+      };
+
+      if (oneSignalTemplateId != null && oneSignalTemplateId.isNotEmpty) {
+        pushNotificationBody.addAll({"template_id": oneSignalTemplateId});
+      }
 
       /// Make post request to Stripe
       var pushResponse = await http.post(
@@ -684,7 +692,7 @@ class OnesignalHelper {
           'accept': 'application/json',
           'content-Type': 'application/json',
         },
-        body: pushNotificationBody,
+        body: jsonEncode(pushNotificationBody),
       );
       appLogger
           .d('[[ ONESIGNAL API ]] PUSH SEND RESPONSE: ${pushResponse.body}');
@@ -704,9 +712,9 @@ class OnesignalHelper {
     required List<String> clientEmails,
     required String fromName,
     required String replyToEmail,
-    required String oneSignalCustomerEmailTemplateId,
-    required String oneSignalClientEmailTemplateId,
-    required String oneSignalClientPushTemplateId,
+    String? oneSignalCustomerEmailTemplateId,
+    String? oneSignalClientEmailTemplateId,
+    String? oneSignalClientPushTemplateId,
     String? toName,
   }) async {
     ///
@@ -748,10 +756,10 @@ class OnesignalHelper {
       appLogger.d('[[ ONESIGNAL API ]] ATTEMPTING TO SEND EMAIL NOTIFICATION');
 
       //! Customer email request body
-      var customerBody = jsonEncode({
+      var customerBody = {
         "app_id": secrets.appId,
-        "template_id":
-            oneSignalCustomerEmailTemplateId, //   OnesignalTemplateIds.successfulProductPurchaseCustomerEmail.value,
+        // "template_id":
+        //     oneSignalCustomerEmailTemplateId, //   OnesignalTemplateIds.successfulProductPurchaseCustomerEmail.value,
         "email_subject": subject,
         "email_from_name": fromName,
         // "email_from_address": AppClient.supportEmail,
@@ -762,7 +770,12 @@ class OnesignalHelper {
         // "<html><head>Welcome to Cat Facts</head><body><h1>Welcome to Cat Facts<h1><h4>Learn more about everyone's favorite furry companions!</h4><hr/><p>Hi Nick,</p><p>Thanks for subscribing to Cat Facts! We can't wait to surprise you with funny details about your favorite animal.</p><h5>Today's Cat Fact (March 27)</h5><p>In tigers and tabbies, the middle of the tongue is covered in backward-pointing spines, used for breaking off and gripping meat.</p><a href='https://catfac.ts/welcome'>Show me more Cat Facts</a><hr/><p><small>(c) 2018 Cat Facts, inc</small></p><p><small><a href='[unsubscribe_url]'>Unsubscribe</a></small></p></body></html>",
         // "included_segments": ["Subscribed Users"],
         "custom_data": customData
-      });
+      };
+
+      if (oneSignalCustomerEmailTemplateId != null &&
+          oneSignalCustomerEmailTemplateId.isNotEmpty) {
+        customerBody.addAll({"template_id": oneSignalCustomerEmailTemplateId});
+      }
 
       // Make post request to Onesignal
       var customerEmailResponse = await http.post(
@@ -771,27 +784,30 @@ class OnesignalHelper {
           'Authorization': 'Basic ${secrets.apiKey}',
           'Content-Type': 'application/json; charset=utf-8',
         },
-        body: customerBody,
+        body: jsonEncode(customerBody),
       );
       appLogger.d(
           '[[ ONESIGNAL API ]] CUSTOMER EMAIL SEND RESPONSE: ${customerEmailResponse.body}');
 
       //! Client email request body
-      var clientBody = jsonEncode({
+      var clientBody = {
         "app_id": secrets.appId,
-        "template_id":
-            oneSignalClientEmailTemplateId, //    OnesignalTemplateIds.successfulProductPurchaseClientEmail.value,
+        // "template_id":
+        //     oneSignalClientEmailTemplateId, //    OnesignalTemplateIds.successfulProductPurchaseClientEmail.value,
         "email_subject":
             "🎉 An order for ${orderInfo.productName} has been placed!",
         "email_from_name": fromName,
-        // "email_from_address": AppClient.supportEmail,
         "email_reply_to_address": replyToEmail,
         "email_preheader":
             "${orderInfo.shipToName} has placed an order for ${orderInfo.productName}! Time to get to work!",
         "include_email_tokens": clientEmails,
         "custom_data": customData
-      });
+      };
 
+      if (oneSignalClientEmailTemplateId != null &&
+          oneSignalClientEmailTemplateId.isNotEmpty) {
+        clientBody.addAll({"template_id": oneSignalClientEmailTemplateId});
+      }
       // Make post request to Onesignal
       var clientEmailResponse = await http.post(
         Uri.parse('https://onesignal.com/api/v1/notifications'),
@@ -799,16 +815,16 @@ class OnesignalHelper {
           'Authorization': 'Basic ${secrets.apiKey}',
           'Content-Type': 'application/json; charset=utf-8',
         },
-        body: clientBody,
+        body: jsonEncode(clientBody),
       );
       appLogger.d(
           '[[ ONESIGNAL API ]] CUSTOMER EMAIL SEND RESPONSE: ${clientEmailResponse.body}');
 
       //! Push request body
-      var pushNotificationBody = jsonEncode({
+      var pushNotificationBody = {
         "app_id": secrets.appId,
-        "template_id":
-            oneSignalClientPushTemplateId, //   OnesignalTemplateIds.successfulProductPurchaseClientPush.value,
+        // "template_id":
+        //     oneSignalClientPushTemplateId, //   OnesignalTemplateIds.successfulProductPurchaseClientPush.value,
         "filters": [
           {
             "field": "tag",
@@ -819,7 +835,13 @@ class OnesignalHelper {
         ],
         "custom_data": customData,
         // "android_group": OnesignalPushGroups.purchase.value,
-      });
+      };
+
+      if (oneSignalClientPushTemplateId != null &&
+          oneSignalClientPushTemplateId.isNotEmpty) {
+        pushNotificationBody
+            .addAll({"template_id": oneSignalClientPushTemplateId});
+      }
       // Make post request to Onesignal
       var clientPushResponse = await http.post(
         Uri.parse('https://onesignal.com/api/v1/notifications'),
@@ -828,7 +850,7 @@ class OnesignalHelper {
           'accept': 'application/json',
           'content-Type': 'application/json',
         },
-        body: pushNotificationBody,
+        body: jsonEncode(pushNotificationBody),
       );
       appLogger.d(
           '[[ ONESIGNAL API ]] PUSH SEND RESPONSE: ${clientPushResponse.body}');
@@ -845,19 +867,15 @@ class OnesignalHelper {
     required String fromName,
     required String replyToEmail,
     required String productTitle,
-    required String oneSignalTemplateId,
+    String? oneSignalTemplateId,
     String? toName,
     String? imageUrl,
   }) async {
     ///
     Map<String, String> customData = {
       "product_title": productTitle,
-    };
-
-    ///
-    customData.addAll({
       "app_user_id": appUserId,
-    });
+    };
 
     if (imageUrl != null) {
       customData.addAll({"image_url": imageUrl});
@@ -873,17 +891,21 @@ class OnesignalHelper {
       appLogger.d('[[ ONESIGNAL API ]] ATTEMPTING TO SEND EMAIL NOTIFICATION');
 
       //Request body
-      var body = jsonEncode({
+      var body = {
         "app_id": secrets.appId,
-        "template_id":
-            oneSignalTemplateId, //  OnesignalTemplateIds.failedProductPurchaseEmail.value,
+        // "template_id":
+        //     oneSignalTemplateId, //  OnesignalTemplateIds.failedProductPurchaseEmail.value,
         "email_subject": subject,
         "email_from_name": fromName,
         "email_reply_to_address": replyToEmail,
         "email_preheader": preheader,
         "include_email_tokens": toEmails,
         "custom_data": customData
-      });
+      };
+
+      if (oneSignalTemplateId != null && oneSignalTemplateId.isNotEmpty) {
+        body.addAll({"template_id": oneSignalTemplateId});
+      }
 
       //Make post request to Stripe
       var response = await http.post(
@@ -892,7 +914,7 @@ class OnesignalHelper {
           'Authorization': 'Basic ${secrets.apiKey}',
           'Content-Type': 'application/json; charset=utf-8',
         },
-        body: body,
+        body: jsonEncode(body),
       );
       appLogger.d('[[ ONESIGNAL API ]] EMAIL SEND RESPONSE: ${response.body}');
     } catch (err) {
