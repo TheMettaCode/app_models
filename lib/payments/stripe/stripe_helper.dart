@@ -744,7 +744,7 @@ class StripeHelper {
         // return finalProductsList;
       } else {
         appLogger.d(
-            '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = $response');
+            '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = ${response.toString()}');
         // '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = ${response.statusCode}');
         // return currentStripeProductsList.isNotEmpty
         //     ? currentStripeProductsList
