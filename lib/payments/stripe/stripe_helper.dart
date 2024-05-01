@@ -676,9 +676,9 @@ class StripeHelper {
     //   HttpHeaders.authorizationHeader: "Bearer $stripeSecretApiKey",
     // };
 
-    Map<String, String> data = {"active": "true"};
+    Map<String, dynamic> data = {"active": "true"};
     if (productIds != null && productIds.isNotEmpty) {
-      data.addAll({"ids[]": productIds.toString()});
+      data.addAll({"ids[]": productIds});
     }
 
     try {
