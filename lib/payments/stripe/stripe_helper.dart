@@ -676,7 +676,10 @@ class StripeHelper {
     //   HttpHeaders.authorizationHeader: "Bearer $stripeSecretApiKey",
     // };
 
-    Map<String, String> data = {"active": "true"};
+    Map<String, String> data = {
+      "active": "true",
+      "metadata[application]": "scapegoats_music"
+    };
     // if (productIds != null && productIds.isNotEmpty) {
     //   data.addAll({"ids[]": productIds});
     // }
