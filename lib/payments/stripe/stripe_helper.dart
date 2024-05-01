@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:animate_do/animate_do.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as strp;
@@ -661,21 +660,21 @@ class StripeHelper {
     // final bool devFlagActive = developerNotifier.value;
     // final bool stripeTestMode = devFlagActive;
 
-    final String stripeSecretApiKey =
-        testing ? secrets.secretTestKey : secrets.secretKey;
+    // final String stripeSecretApiKey =
+    //     testing ? secrets.secretTestKey : secrets.secretKey;
 
     // List<StripeProduct> currentStripeProductsList = [];
     List<StripeProduct> finalProductsList = [];
 
     // if (testing || currentStripeProductsList.isEmpty) {
-    var dio = Dio();
+    // var dio = Dio();
 
-    const String productListUrl = 'https://api.stripe.com/v1/products';
+    // const String productListUrl = 'https://api.stripe.com/v1/products';
 
-    final headers = {
-      HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded",
-      HttpHeaders.authorizationHeader: "Bearer $stripeSecretApiKey",
-    };
+    // final headers = {
+    //   HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded",
+    //   HttpHeaders.authorizationHeader: "Bearer $stripeSecretApiKey",
+    // };
 
     Map<String, dynamic> data = {
       "active": "true"
@@ -686,36 +685,36 @@ class StripeHelper {
       data.addAll({"metadata[$metadataCheckKey]": metadataCheckValue});
     }
 
-    if (productIds != null && productIds.isNotEmpty) {
-      data.addAll({"ids[]": productIds});
-      // for (var i = 0; i < productIds.length; i++) {
-      //   data.addAll({"id[$i]": productIds[i]});
-      //   appLogger.f(
-      //       '[STRIPE API] STRIPE PRODUCT ID ${productIds[i]} ADDED TO QUERY DATA.');
-      // }
-    }
+    // if (productIds != null && productIds.isNotEmpty) {
+    //   data.addAll({"ids[]": productIds});
+    //   // for (var i = 0; i < productIds.length; i++) {
+    //   //   data.addAll({"id[$i]": productIds[i]});
+    //   //   appLogger.f(
+    //   //       '[STRIPE API] STRIPE PRODUCT ID ${productIds[i]} ADDED TO QUERY DATA.');
+    //   // }
+    // }
 
     try {
-      // var response = await http
-      //     .post(
-      //       Uri.parse('https://api.stripe.com/v1/products'),
-      //       headers: {
-      //         'Authorization':
-      //             'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
-      //         'Content-Type': 'application/x-www-form-urlencoded'
-      //       },
-      //       body: data,
-      //       // body: jsonEncode(data),
-      //     )
-      //     .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
-
-      final response = await dio
-          .get(productListUrl,
-              queryParameters: data,
-              options: Options(
-                  headers: headers,
-                  contentType: Headers.formUrlEncodedContentType))
+      var response = await http
+          .post(
+            Uri.parse('https://api.stripe.com/v1/products'),
+            headers: {
+              'Authorization':
+                  'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: data,
+            // body: jsonEncode(data),
+          )
           .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
+
+      // final response = await dio
+      //     .get(productListUrl,
+      //         queryParameters: data,
+      //         options: Options(
+      //             headers: headers,
+      //             contentType: Headers.formUrlEncodedContentType))
+      //     .timeout(const Duration(seconds: apiResponseTimeoutSeconds));
 
       if (response.statusCode == 200) {
         // log.w(
@@ -724,8 +723,7 @@ class StripeHelper {
         // log.d(
         //     '[STRIPE API] EXTRACTING ${stripeTestMode ? 'TEST' : ''} PRODUCTS FROM JSON');
 
-        final stripeProductsList = stripeProductsListFromJson(response.data);
-        // final stripeProductsList = stripeProductsListFromJson(response.body);
+        final stripeProductsList = stripeProductsListFromJson(response.body);
 
         // log.d(
         //     '[STRIPE API] SORTING ${stripeTestMode ? 'TEST' : ''} PRODUCTS LIST');
@@ -747,8 +745,7 @@ class StripeHelper {
         // return finalProductsList;
       } else {
         appLogger.d(
-            '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = ${response.data.toString()}');
-        // '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = ${response.body.toString()}');
+            '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = ${response.body.toString()}');
         // '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = ${response.statusCode}');
         // return currentStripeProductsList.isNotEmpty
         //     ? currentStripeProductsList
