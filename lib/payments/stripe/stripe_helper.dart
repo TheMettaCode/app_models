@@ -676,7 +676,7 @@ class StripeHelper {
     //   HttpHeaders.authorizationHeader: "Bearer $stripeSecretApiKey",
     // };
 
-    var data = <String, dynamic>{"active": true};
+    Map<String, dynamic> data = {"active": true};
     if (productIds != null && productIds.isNotEmpty) {
       data.addAll({"ids[]": productIds});
     }
@@ -690,7 +690,8 @@ class StripeHelper {
                   'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
               'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: jsonEncode(data),
+            body: data,
+            // body: jsonEncode(data),
           )
           .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
 
