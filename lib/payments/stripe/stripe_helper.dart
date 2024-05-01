@@ -688,7 +688,7 @@ class StripeHelper {
     if (productIds != null && productIds.isNotEmpty) {
       for (var i = 0; i < productIds.length; i++) {
         data.addAll({"ids[$i]": productIds[i]});
-        appLogger.w(
+        appLogger.f(
             '[STRIPE API] STRIPE PRODUCT ID ${productIds[i]} ADDED TO QUERY DATA.');
       }
     }
@@ -702,8 +702,8 @@ class StripeHelper {
                   'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
               'Content-Type': 'application/x-www-form-urlencoded'
             },
-            // body: data,
-            body: jsonEncode(data),
+            body: data,
+            // body: jsonEncode(data),
           )
           .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
 
@@ -741,10 +741,11 @@ class StripeHelper {
 
         // log.d(
         //     '[STRIPE API] RETURNING ${stripeTestMode ? 'TEST' : ''} PRODUCTS LIST');
-        return finalProductsList;
+        // return finalProductsList;
       } else {
         appLogger.d(
-            '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = ${response.statusCode}');
+            '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = $response');
+        // '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = ${response.statusCode}');
         // return currentStripeProductsList.isNotEmpty
         //     ? currentStripeProductsList
         //         .where((element) =>
@@ -754,7 +755,7 @@ class StripeHelper {
       }
     } on TimeoutException catch (e) {
       appLogger
-          .d('[STRIPE API] API TIMEOUT ERROR: FETCHING STRIPE PRODUCTS: $e');
+          .e('[STRIPE API] API TIMEOUT ERROR: FETCHING STRIPE PRODUCTS: $e');
 
       // return currentStripeProductsList.isNotEmpty
       //     ? currentStripeProductsList
@@ -763,7 +764,7 @@ class StripeHelper {
       //         .toList()
       //     : [];
     } catch (e) {
-      appLogger.d(
+      appLogger.e(
           '[STRIPE API] ${testing ? 'TEST' : ''} PRODUCTS RETRIEVAL ERROR: $e');
       // return currentStripeProductsList.isNotEmpty
       //     ? currentStripeProductsList
