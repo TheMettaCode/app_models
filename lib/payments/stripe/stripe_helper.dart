@@ -688,7 +688,8 @@ class StripeHelper {
     if (productIds != null && productIds.isNotEmpty) {
       for (var i = 0; i < productIds.length; i++) {
         data.addAll({"ids[$i]": productIds[i]});
-        appLogger.w('[STRIPE API] STRIPE PRODUCT ID ${productIds[i]} ADDED.');
+        appLogger.w(
+            '[STRIPE API] STRIPE PRODUCT ID ${productIds[i]} ADDED TO QUERY DATA.');
       }
     }
 
@@ -701,8 +702,8 @@ class StripeHelper {
                   'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
               'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: data,
-            // body: jsonEncode(data),
+            // body: data,
+            body: jsonEncode(data),
           )
           .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
 
