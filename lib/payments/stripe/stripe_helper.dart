@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:animate_do/animate_do.dart';
@@ -69,7 +70,7 @@ class StripeHelper {
 
       appLogger.f(
           '[[ STRIPE PAYMENT API INIT ]] SEARCHING FOR${testing ? ' TEST' : ''} STRIPE CUSTOMER FROM REMOTE SERVER USING APP USER ID');
-      await searchForExistingStripeCustomer(
+      await _searchForExistingStripeCustomer(
         secrets: secrets,
         testing: testing,
         name: name,
@@ -110,7 +111,7 @@ class StripeHelper {
 
     appLogger.w(
         '[[ STRIPE PAYMENT API PROCESS PAYMENT ]] CURRENT STRIPE CUSTOMER IDS: ${stripeCustomerNotifier.value.join(", ")}');
-    StripeCustomer? stripeCustomer = await getStripeCustomer(
+    StripeCustomer? stripeCustomer = await _getStripeCustomer(
       secrets: secrets,
       testing: testing,
       purchaserInfo: purchaserInfo,
@@ -123,7 +124,7 @@ class StripeHelper {
 
         String? fullPaymentLinkData;
 
-        fullPaymentLinkData = await createStripePaymentLink(
+        fullPaymentLinkData = await _createStripePaymentLink(
           secrets: secrets,
           testing: testing,
           appUserId: appUserId,
@@ -186,7 +187,7 @@ class StripeHelper {
               bool,
               CheckoutSessionsDatum?,
               PriceCalculations?
-            ) purchaseVerified = await verifyStripePayment(
+            ) purchaseVerified = await _verifyStripePayment(
               secrets: secrets,
               testing: testing,
               customerId: stripeCustomer.id,
@@ -444,7 +445,7 @@ class StripeHelper {
   //   return paymentSuccessful;
   // }
 
-  static Future<List<StripeCustomer>> searchForExistingStripeCustomer({
+  static Future<List<StripeCustomer>> _searchForExistingStripeCustomer({
     required StripeSecrets secrets,
     // int? createdAfterDate, // created > createdAfterDate
     required bool testing,
@@ -487,7 +488,7 @@ class StripeHelper {
                   'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
               'Content-Type': 'application/x-www-form-urlencoded'
             },
-          );
+          ).timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
 
           appLogger.d(
               '[STRIPE API STRIPE CUSTOMER SEARCH] ${testing ? 'TEST' : ''} STRIPE CUSTOMER SEARCH RESPONSE: ${customerSearchResponse.body}');
@@ -522,7 +523,7 @@ class StripeHelper {
     return existingStripeCustomers;
   }
 
-  static Future<StripeCustomer?> getStripeCustomer({
+  static Future<StripeCustomer?> _getStripeCustomer({
     required StripeSecrets secrets,
     required bool testing,
     GeneralPurchaserInfo? purchaserInfo,
@@ -532,7 +533,7 @@ class StripeHelper {
 
     if (purchaserInfo != null) {
       List<StripeCustomer> existingStripeCustomers =
-          await searchForExistingStripeCustomer(
+          await _searchForExistingStripeCustomer(
         secrets: secrets,
         testing: testing,
         name: purchaserInfo.fullName,
@@ -573,15 +574,17 @@ class StripeHelper {
           appLogger.d(
               '[[ STRIPE PAYMENT API GET CUSTOMER ]] ATTEMPTING TO CREATE ${testing ? 'TEST ' : ''}CUSTOMER');
 
-          var createCustomerResponse = await http.post(
-            Uri.parse('https://api.stripe.com/v1/customers'),
-            headers: {
-              'Authorization':
-                  'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: body,
-          );
+          var createCustomerResponse = await http
+              .post(
+                Uri.parse('https://api.stripe.com/v1/customers'),
+                headers: {
+                  'Authorization':
+                      'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: body,
+              )
+              .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
           appLogger.d(
               '[[ STRIPE PAYMENT API GET CUSTOMER ]] CREATE ${testing ? 'TEST ' : ''}STRIPE CUSTOMER RESPONSE: ${createCustomerResponse.body}');
 
@@ -642,7 +645,131 @@ class StripeHelper {
   //   return ephemeralKey;
   // }
 
-  static Future<StripeProduct?> getExistingStripeProduct({
+  /// RETRIEVE ALL AVAILABLE STRIPE PRODUCTS AND SUBSCRIPTIONS
+  static Future<List<StripeProduct>> getMultipleStripeProducts({
+    required StripeSecrets secrets,
+    required bool testing,
+    // Map<String, dynamic>? prouctMetadata,
+    String? metadataCheckKey,
+    String? metadataCheckValue,
+    List<String>? productIds,
+  }) async {
+    appLogger.d('[STRIPE API GET ALL FUNCTION] FETCHING STRIPE PRODUCTS');
+
+    // final bool devFlagActive = developerNotifier.value;
+    // final bool stripeTestMode = devFlagActive;
+
+    // final String stripeSecretApiKey =
+    //     testing ? secrets.secretTestKey : secrets.secretKey;
+
+    // List<StripeProduct> currentStripeProductsList = [];
+    List<StripeProduct> finalProductsList = [];
+
+    // if (testing || currentStripeProductsList.isEmpty) {
+    // var dio = Dio();
+
+    // const String productListUrl = 'https://api.stripe.com/v1/products';
+
+    // final headers = {
+    //   HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded",
+    //   HttpHeaders.authorizationHeader: "Bearer $stripeSecretApiKey",
+    // };
+
+    var data = <String, dynamic>{"active": true};
+    if (productIds != null && productIds.isNotEmpty) {
+      data.addAll({"ids[]": productIds});
+    }
+
+    try {
+      var response = await http
+          .post(
+            Uri.parse('https://api.stripe.com/v1/products'),
+            headers: {
+              'Authorization':
+                  'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: jsonEncode(data),
+          )
+          .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
+
+      // final response = await dio
+      //     .get(productListUrl,
+      //         queryParameters: data,
+      //         options: Options(
+      //             headers: headers,
+      //             contentType: Headers.formUrlEncodedContentType))
+      //     .timeout(const Duration(seconds: apiResponseTimeoutSeconds));
+
+      if (response.statusCode == 200) {
+        // log.w(
+        //     '[STRIPE API] ${stripeTestMode ? 'TEST' : ''} PRODUCT RETRIEVAL RESPONSE DATA: ${response.data}');
+
+        // log.d(
+        //     '[STRIPE API] EXTRACTING ${stripeTestMode ? 'TEST' : ''} PRODUCTS FROM JSON');
+
+        final stripeProductsList = stripeProductsListFromJson(response.body);
+
+        // log.d(
+        //     '[STRIPE API] SORTING ${stripeTestMode ? 'TEST' : ''} PRODUCTS LIST');
+
+        if (metadataCheckKey != null && metadataCheckValue != null) {
+          finalProductsList = stripeProductsList.products
+              .where((element) =>
+                  element.metadata?[metadataCheckKey] == metadataCheckValue)
+              .toList();
+        } else {
+          finalProductsList = stripeProductsList.products;
+        }
+
+        // log.i(
+        //     '[STRIPE API] ${stripeTestMode ? 'TEST' : ''} FINAL PRODUCT LISTING: ${finalProductsList.map((e) => e.name)}');
+
+        // log.d(
+        //     '[STRIPE API] RETURNING ${stripeTestMode ? 'TEST' : ''} PRODUCTS LIST');
+        return finalProductsList;
+      } else {
+        appLogger.d(
+            '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = ${response.statusCode}');
+        // return currentStripeProductsList.isNotEmpty
+        //     ? currentStripeProductsList
+        //         .where((element) =>
+        //             element.metadata?[metadataCheckKey] == metadataCheckValue)
+        //         .toList()
+        //     : [];
+      }
+    } on TimeoutException catch (e) {
+      appLogger
+          .d('[STRIPE API] API TIMEOUT ERROR: FETCHING STRIPE PRODUCTS: $e');
+
+      // return currentStripeProductsList.isNotEmpty
+      //     ? currentStripeProductsList
+      //         .where((element) =>
+      //             element.metadata?.application == Application.nameTag)
+      //         .toList()
+      //     : [];
+    } catch (e) {
+      appLogger.d(
+          '[STRIPE API] ${testing ? 'TEST' : ''} PRODUCTS RETRIEVAL ERROR: $e');
+      // return currentStripeProductsList.isNotEmpty
+      //     ? currentStripeProductsList
+      //         .where((element) =>
+      //             element.metadata?.application == Application.nameTag)
+      //         .toList()
+      //     : [];
+    }
+    // } else {
+    //   appLogger.d(
+    //       '[STRIPE API] ${testing ? 'TEST' : ''} PRODUCTS ALREADY RETRIEVED: ${currentStripeProductsList.map((e) => e.name)}');
+    //   // return currentStripeProductsList
+    //   //     .where(
+    //   //         (element) => element.metadata?.application == Application.nameTag)
+    //   //     .toList();
+    // }
+    return finalProductsList;
+  }
+
+  static Future<StripeProduct?> _getExistingStripeProduct({
     required StripeSecrets secrets,
     required bool testing,
     required String productId,
@@ -661,7 +788,7 @@ class StripeHelper {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         // body: body,
-      );
+      ).timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
       appLogger.d(
           '[[ STRIPE API GET PRODUCT ]] GET${testing ? ' TEST' : ''} PRODUCT RESPONSE: ${productResponse.body}');
 
@@ -681,7 +808,7 @@ class StripeHelper {
     return existingProduct;
   }
 
-  static Future<List<StripeProduct?>> createStripeProduct({
+  static Future<List<StripeProduct?>> _createStripeProduct({
     required StripeSecrets secrets,
     required bool testing,
     required GeneralProductInfo productInfo,
@@ -719,15 +846,17 @@ class StripeHelper {
       };
 
       /// CREATE LIVE STRIPE PRODUCT
-      var response = await http.post(
-        Uri.parse('https://api.stripe.com/v1/products'),
-        headers: {
-          'Authorization':
-              'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body,
-      );
+      var response = await http
+          .post(
+            Uri.parse('https://api.stripe.com/v1/products'),
+            headers: {
+              'Authorization':
+                  'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body,
+          )
+          .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
       appLogger.d(
           '[[ STRIPE API CREATE PRODUCT ]] CREATE${testing ? ' TEST' : ''} PRODUCT RESPONSE: ${response.body}');
       var newLiveProduct = stripeProductFromJson(response.body);
@@ -738,7 +867,7 @@ class StripeHelper {
     return [stripeLiveProduct, stripeTestProduct];
   }
 
-  static Future<StripePrice?> getStripePrice({
+  static Future<StripePrice?> _getStripePrice({
     required StripeSecrets secrets,
     required bool testing,
     required GeneralProductInfo productInfo,
@@ -750,7 +879,7 @@ class StripeHelper {
     if (!createNewPrice) {
       try {
         /// Check for existing price
-        price = await searchForExistingStripePrice(
+        price = await _searchForExistingStripePrice(
           secrets: secrets,
           testing: testing,
           productInfo: productInfo,
@@ -782,15 +911,17 @@ class StripeHelper {
         };
 
         //Make post request to Stripe
-        var priceResponse = await http.post(
-          Uri.parse('https://api.stripe.com/v1/prices'),
-          headers: {
-            'Authorization':
-                'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: priceBody,
-        );
+        var priceResponse = await http
+            .post(
+              Uri.parse('https://api.stripe.com/v1/prices'),
+              headers: {
+                'Authorization':
+                    'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: priceBody,
+            )
+            .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
 
         ///
         appLogger.i(
@@ -799,7 +930,7 @@ class StripeHelper {
         if (priceResponse.body.contains("No such product")) {
           appLogger.i(
               '[[ STRIPE API CREATE PRICE ]] THE PROVIDED${testing ? ' TEST' : ''} PRICE WAS NOT FOUND. ATTEMPTING TO CREATE NEW...');
-          StripePrice? newPrice = await getStripePrice(
+          StripePrice? newPrice = await _getStripePrice(
             secrets: secrets,
             testing: testing,
             productInfo: productInfo,
@@ -824,7 +955,7 @@ class StripeHelper {
     return price;
   }
 
-  static Future<StripePrice?> searchForExistingStripePrice({
+  static Future<StripePrice?> _searchForExistingStripePrice({
     required StripeSecrets secrets,
     required bool testing,
     GeneralProductInfo? productInfo,
@@ -844,7 +975,7 @@ class StripeHelper {
               'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-      );
+      ).timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
 
       appLogger.d(
           '[STRIPE API STRIPE PRICE SEARCH] STRIPE PRICE SEARCH RESPONSE: ${priceSearchResponse.body}');
@@ -892,7 +1023,7 @@ class StripeHelper {
     return existingStripePrice;
   }
 
-  static Future<String?> createStripePaymentLink({
+  static Future<String?> _createStripePaymentLink({
     required StripeSecrets secrets,
     required bool testing,
     required String appUserId,
@@ -911,7 +1042,7 @@ class StripeHelper {
     if (priceCalculations != null) {
       appLogger.w(
           '[STRIPE API CREATE PAYMENT LINK] ATTEMPTING TO CREATE ADJUSTED ${testing ? 'TEST' : ''} PRICE ID WITH NEWLY CALCULATED DATA...');
-      await getStripePrice(
+      await _getStripePrice(
         secrets: secrets,
         testing: testing,
         productInfo: productInfo,
@@ -926,7 +1057,7 @@ class StripeHelper {
     String? shippingId;
     appLogger.d(
         '[STRIPE API CREATE PAYMENT LINK] CREATING STRIPE ${testing ? 'TEST' : ''} SHIPPING ID');
-    await getStripeProductShippingPrice(
+    await _getStripeProductShippingPrice(
       secrets: secrets,
       testing: testing,
       productInfo: productInfo,
@@ -970,15 +1101,17 @@ class StripeHelper {
             {"shipping_address_collection[allowed_countries][0]": "US"});
       }
 
-      final paymentLinkResponse = await http.post(
-        Uri.parse('https://api.stripe.com/v1/payment_links'),
-        headers: {
-          'Authorization':
-              'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body,
-      );
+      final paymentLinkResponse = await http
+          .post(
+            Uri.parse('https://api.stripe.com/v1/payment_links'),
+            headers: {
+              'Authorization':
+                  'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body,
+          )
+          .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
 
       appLogger.d(
           '[STRIPE API CREATE PAYMENT LINK] ${testing ? 'TEST' : ''} PAYMENT LINK RESPONSE: ${paymentLinkResponse.body}');
@@ -995,7 +1128,7 @@ class StripeHelper {
 
         /// Get coupon and promo-code
         PromoCode? promoCode;
-        await getCouponAndPromoCode(
+        await _getCouponAndPromoCode(
                 secrets: secrets,
                 testing: testing,
                 productInfo: productInfo,
@@ -1026,7 +1159,7 @@ class StripeHelper {
     }
   }
 
-  static Future<StripeShippingPrice?> getStripeProductShippingPrice({
+  static Future<StripeShippingPrice?> _getStripeProductShippingPrice({
     required StripeSecrets secrets,
     required bool testing,
     required GeneralProductInfo productInfo,
@@ -1037,7 +1170,7 @@ class StripeHelper {
 
     /// Check for existing price
     try {
-      finalShippingId = await searchForExistingShippingPrice(
+      finalShippingId = await _searchForExistingShippingPrice(
         secrets: secrets,
         testing: testing,
         priceToCheck: shippingAndHandling,
@@ -1066,15 +1199,17 @@ class StripeHelper {
         };
 
         /// CREATE LIVE SHIPPING ID
-        var response = await http.post(
-          Uri.parse('https://api.stripe.com/v1/shipping_rates'),
-          headers: {
-            'Authorization':
-                'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: body,
-        );
+        var response = await http
+            .post(
+              Uri.parse('https://api.stripe.com/v1/shipping_rates'),
+              headers: {
+                'Authorization':
+                    'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: body,
+            )
+            .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
         appLogger.d(
             '[[ STRIPE API CREATE SHIPPING ID ]] ${testing ? 'TEST' : ''} SHIPPING ID RESPONSE: ${response.body}');
         finalShippingId = stripeShippingIdFromJson(response.body);
@@ -1089,7 +1224,7 @@ class StripeHelper {
     return finalShippingId;
   }
 
-  static Future<StripeShippingPrice?> searchForExistingShippingPrice({
+  static Future<StripeShippingPrice?> _searchForExistingShippingPrice({
     required StripeSecrets secrets,
     required bool testing,
     required double priceToCheck,
@@ -1106,7 +1241,7 @@ class StripeHelper {
               'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-      );
+      ).timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
 
       appLogger.d(
           '[STRIPE API STRIPE SHIPPING PRICE SEARCH] STRIPE ${testing ? 'TEST' : ''} SHIPPING PRICE SEARCH RESPONSE: ${searchResponse.body}');
@@ -1145,7 +1280,7 @@ class StripeHelper {
   }
 
   static Future<(bool, CheckoutSessionsDatum?, PriceCalculations?)>
-      verifyStripePayment({
+      _verifyStripePayment({
     required StripeSecrets secrets,
     required bool testing,
     required GeneralProductInfo productInfo,
@@ -1159,7 +1294,7 @@ class StripeHelper {
         priceCalculationsNotifier.value;
     CheckoutSessionsDatum? checkoutSession;
     List<CheckoutSessionsDatum> checkoutSessionsList =
-        await getRecentCheckoutSessions(
+        await _getRecentCheckoutSessions(
       secrets: secrets,
       testing: testing,
       customerId: customerId,
@@ -1233,7 +1368,7 @@ class StripeHelper {
   }
 
   /// GET RECENT CHECKOUT SESSIONS
-  static Future<List<CheckoutSessionsDatum>> getRecentCheckoutSessions({
+  static Future<List<CheckoutSessionsDatum>> _getRecentCheckoutSessions({
     required StripeSecrets secrets,
     required bool testing,
     required String customerId,
@@ -1253,7 +1388,7 @@ class StripeHelper {
               'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-      );
+      ).timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
 
       if (checkoutSessionsResponse.statusCode == 200) {
         appLogger.d(
@@ -1310,7 +1445,7 @@ class StripeHelper {
     return sessionsList;
   }
 
-  static Future<CouponAndPromoCode?> getCouponAndPromoCode({
+  static Future<CouponAndPromoCode?> _getCouponAndPromoCode({
     required StripeSecrets secrets,
     required bool testing,
     GeneralProductInfo? productInfo,
@@ -1341,7 +1476,7 @@ class StripeHelper {
 
       if ((percentOff != null && percentOff > 0.01) ||
           priceCalculations.totalPercentOff > 0.01) {
-        await getCoupon(
+        await _getCoupon(
           secrets: secrets,
           testing: testing,
           productInfo: productInfo,
@@ -1353,7 +1488,7 @@ class StripeHelper {
             appLogger.i(
                 '[STRIPE API CREATE COUPON WITH PROMO CODE] COUPON TO BE USED ==> ${coupon.id}');
             newCoupon = coupon;
-            await getPromoCode(
+            await _getPromoCode(
                     secrets: secrets, testing: testing, coupon: coupon)
                 .then((promoCode) {
               if (promoCode != null) {
@@ -1377,7 +1512,7 @@ class StripeHelper {
         : CouponAndPromoCode(coupon: newCoupon!, promoCode: newPromoCode!);
   }
 
-  static Future<Coupon?> getCoupon({
+  static Future<Coupon?> _getCoupon({
     required StripeSecrets secrets,
     required bool testing,
     GeneralProductInfo? productInfo,
@@ -1390,7 +1525,7 @@ class StripeHelper {
     ///
     try {
       if (productInfo?.salePercentOff != null) {
-        await checkForExistingCoupon(
+        await _checkForExistingCoupon(
                 secrets: secrets,
                 testing: testing,
                 percentOff: priceCalculations?.totalPercentOff ??
@@ -1433,15 +1568,17 @@ class StripeHelper {
 
         if (couponBody != null) {
           //Make post request to Stripe
-          var couponResponse = await http.post(
-            Uri.parse('https://api.stripe.com/v1/coupons'),
-            headers: {
-              'Authorization':
-                  'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: couponBody,
-          );
+          var couponResponse = await http
+              .post(
+                Uri.parse('https://api.stripe.com/v1/coupons'),
+                headers: {
+                  'Authorization':
+                      'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: couponBody,
+              )
+              .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
           appLogger.i(
               '[[ STRIPE API GET COUPON ]]${testing ? ' TEST' : ''} RESPONSE: ${couponResponse.body}');
           var newCoupon = Coupon.fromJson(jsonDecode(couponResponse.body));
@@ -1457,15 +1594,16 @@ class StripeHelper {
     return coupon;
   }
 
-  static Future<Coupon?> checkForExistingCoupon(
-      {required StripeSecrets secrets,
-      required bool testing,
-      required double percentOff}) async {
+  static Future<Coupon?> _checkForExistingCoupon({
+    required StripeSecrets secrets,
+    required bool testing,
+    required double percentOff,
+  }) async {
     Coupon? existingCoupon;
 
     try {
       ///
-      await getAllCoupons(secrets: secrets, testing: testing).then((coupons) {
+      await _getAllCoupons(secrets: secrets, testing: testing).then((coupons) {
         if (coupons.isNotEmpty &&
             coupons.map((e) => e.percentOff).any((element) =>
                 element.toStringAsFixed(2) == percentOff.toStringAsFixed(2))) {
@@ -1493,7 +1631,7 @@ class StripeHelper {
     return existingCoupon;
   }
 
-  static Future<List<Coupon>> getAllCoupons(
+  static Future<List<Coupon>> _getAllCoupons(
       {required StripeSecrets secrets, required bool testing}) async {
     List<Coupon> coupons = [];
 
@@ -1509,7 +1647,7 @@ class StripeHelper {
               'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-      );
+      ).timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
       appLogger.d(
           '[[ STRIPE PAYMENT API COUPONS ]]${testing ? ' TEST' : ''} RESPONSE: ${response.body}');
 
@@ -1531,7 +1669,7 @@ class StripeHelper {
     return coupons;
   }
 
-  static Future<PromoCode?> getPromoCode({
+  static Future<PromoCode?> _getPromoCode({
     required StripeSecrets secrets,
     required bool testing,
     required Coupon coupon,
@@ -1541,7 +1679,7 @@ class StripeHelper {
 
     ///
     try {
-      await checkForExistingPromoCode(
+      await _checkForExistingPromoCode(
               secrets: secrets, testing: testing, coupon: coupon)
           .then((value) {
         if (value != null) {
@@ -1570,15 +1708,17 @@ class StripeHelper {
           });
         }
 
-        var promoCodeResponse = await http.post(
-          Uri.parse('https://api.stripe.com/v1/promotion_codes'),
-          headers: {
-            'Authorization':
-                'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: promoCodeBody,
-        );
+        var promoCodeResponse = await http
+            .post(
+              Uri.parse('https://api.stripe.com/v1/promotion_codes'),
+              headers: {
+                'Authorization':
+                    'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: promoCodeBody,
+            )
+            .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
         appLogger.i(
             '[[ STRIPE API CREATE PROMO CODE ]]${testing ? ' TEST' : ''} RESPONSE: ${promoCodeResponse.body}');
         PromoCode newPromoCode =
@@ -1596,7 +1736,7 @@ class StripeHelper {
     return promotionCode;
   }
 
-  static Future<PromoCode?> checkForExistingPromoCode(
+  static Future<PromoCode?> _checkForExistingPromoCode(
       {required StripeSecrets secrets,
       required bool testing,
       required Coupon coupon}) async {
@@ -1608,7 +1748,7 @@ class StripeHelper {
 
     ///
     try {
-      await getAllPromoCodes(secrets: secrets, testing: testing)
+      await _getAllPromoCodes(secrets: secrets, testing: testing)
           .then((promoCodes) {
         if (promoCodes.isNotEmpty &&
             promoCodes.map((e) => e.coupon.id).contains(coupon.id)) {
@@ -1633,7 +1773,7 @@ class StripeHelper {
     return existingPromoCode;
   }
 
-  static Future<List<PromoCode>> getAllPromoCodes({
+  static Future<List<PromoCode>> _getAllPromoCodes({
     required StripeSecrets secrets,
     required bool testing,
   }) async {
@@ -1651,7 +1791,7 @@ class StripeHelper {
               'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-      );
+      ).timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
       appLogger.d(
           '[[ STRIPE PAYMENT API PROMO CODES ]]${testing ? ' TEST' : ''} RESPONSE: ${response.body}');
 
