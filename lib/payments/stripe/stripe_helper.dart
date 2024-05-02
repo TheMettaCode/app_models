@@ -658,7 +658,6 @@ class StripeHelper {
     final String stripeSecretApiKey =
         testing ? secrets.secretTestKey : secrets.secretKey;
 
-    // List<StripeProduct> currentStripeProductsList = [];
     List<StripeProduct> finalProductsList = [];
 
     String url =
