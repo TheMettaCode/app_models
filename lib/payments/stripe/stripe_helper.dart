@@ -650,15 +650,11 @@ class StripeHelper {
   static Future<List<StripeProduct>> getMultipleStripeProducts({
     required StripeSecrets secrets,
     required bool testing,
-    // Map<String, dynamic>? prouctMetadata,
     String? metadataCheckKey,
     String? metadataCheckValue,
-    // List<String>? productIds,
+    bool activeProducts = true,
   }) async {
     appLogger.d('[STRIPE API GET ALL FUNCTION] FETCHING STRIPE PRODUCTS');
-
-    // final bool devFlagActive = developerNotifier.value;
-    // final bool stripeTestMode = devFlagActive;
 
     final String stripeSecretApiKey =
         testing ? secrets.secretTestKey : secrets.secretKey;
@@ -666,40 +662,12 @@ class StripeHelper {
     // List<StripeProduct> currentStripeProductsList = [];
     List<StripeProduct> finalProductsList = [];
 
-    // if (testing || currentStripeProductsList.isEmpty) {
-    // var dio = Dio();
-
-    // const String productListUrl = 'https://api.stripe.com/v1/products';
-
-    // final headers = {
-    //   HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded",
-    //   HttpHeaders.authorizationHeader: "Bearer $stripeSecretApiKey",
-    // };
-
-    Map<String, String> data = {
-      "active": "true",
-      "metadata[application]": "scapegoats_music"
-    };
-
-    if (metadataCheckKey != null && metadataCheckValue != null) {
-      data.addAll({"metadata[$metadataCheckKey]": metadataCheckValue});
-    }
-
-    // if (productIds != null && productIds.isNotEmpty) {
-    //   data.addAll({"ids[]": productIds});
-    //   // for (var i = 0; i < productIds.length; i++) {
-    //   //   data.addAll({"id[$i]": productIds[i]});
-    //   //   appLogger.f(
-    //   //       '[STRIPE API] STRIPE PRODUCT ID ${productIds[i]} ADDED TO QUERY DATA.');
-    //   // }
-    // }
-
     String url =
-        'https://api.stripe.com/v1/products/search?query=active:"true"';
+        'https://api.stripe.com/v1/products/search?query=active:"$activeProducts"';
 
     if (metadataCheckKey != null && metadataCheckValue != null) {
       url =
-          'https://api.stripe.com/v1/products/search?query=active:"true" AND metadata["$metadataCheckKey"]:"$metadataCheckValue"';
+          'https://api.stripe.com/v1/products/search?query=active:"$activeProducts" AND metadata["$metadataCheckKey"]:"$metadataCheckValue"';
     }
 
     try {
@@ -710,28 +678,13 @@ class StripeHelper {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         // body: data,
-        // body: jsonEncode(data),
       ).timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
-
-      // final response = await dio
-      //     .get(productListUrl,
-      //         queryParameters: data,
-      //         options: Options(
-      //             headers: headers,
-      //             contentType: Headers.formUrlEncodedContentType))
-      //     .timeout(const Duration(seconds: apiResponseTimeoutSeconds));
 
       if (response.statusCode == 200) {
         appLogger.f(
             '[STRIPE API] ${testing ? 'TEST' : ''} PRODUCT RETRIEVAL RESPONSE DATA: ${response.body.toString()}');
 
-        // log.d(
-        //     '[STRIPE API] EXTRACTING ${stripeTestMode ? 'TEST' : ''} PRODUCTS FROM JSON');
-
         final stripeProductsList = stripeProductsListFromJson(response.body);
-
-        // log.d(
-        //     '[STRIPE API] SORTING ${stripeTestMode ? 'TEST' : ''} PRODUCTS LIST');
 
         if (metadataCheckKey != null && metadataCheckValue != null) {
           finalProductsList = stripeProductsList.products
@@ -741,52 +694,18 @@ class StripeHelper {
         } else {
           finalProductsList = stripeProductsList.products;
         }
-
-        // log.i(
-        //     '[STRIPE API] ${stripeTestMode ? 'TEST' : ''} FINAL PRODUCT LISTING: ${finalProductsList.map((e) => e.name)}');
-
-        // log.d(
-        //     '[STRIPE API] RETURNING ${stripeTestMode ? 'TEST' : ''} PRODUCTS LIST');
-        // return finalProductsList;
       } else {
         appLogger.d(
             '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = ${response.body.toString()}');
-        // '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = ${response.statusCode}');
-        // return currentStripeProductsList.isNotEmpty
-        //     ? currentStripeProductsList
-        //         .where((element) =>
-        //             element.metadata?[metadataCheckKey] == metadataCheckValue)
-        //         .toList()
-        //     : [];
       }
     } on TimeoutException catch (e) {
       appLogger
           .e('[STRIPE API] API TIMEOUT ERROR: FETCHING STRIPE PRODUCTS: $e');
-
-      // return currentStripeProductsList.isNotEmpty
-      //     ? currentStripeProductsList
-      //         .where((element) =>
-      //             element.metadata?.application == Application.nameTag)
-      //         .toList()
-      //     : [];
     } catch (e) {
       appLogger.e(
           '[STRIPE API] ${testing ? 'TEST' : ''} PRODUCTS RETRIEVAL ERROR: $e');
-      // return currentStripeProductsList.isNotEmpty
-      //     ? currentStripeProductsList
-      //         .where((element) =>
-      //             element.metadata?.application == Application.nameTag)
-      //         .toList()
-      //     : [];
     }
-    // } else {
-    //   appLogger.d(
-    //       '[STRIPE API] ${testing ? 'TEST' : ''} PRODUCTS ALREADY RETRIEVED: ${currentStripeProductsList.map((e) => e.name)}');
-    //   // return currentStripeProductsList
-    //   //     .where(
-    //   //         (element) => element.metadata?.application == Application.nameTag)
-    //   //     .toList();
-    // }
+
     return finalProductsList;
   }
 
