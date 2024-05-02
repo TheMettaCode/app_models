@@ -715,8 +715,8 @@ class StripeHelper {
       //     .timeout(const Duration(seconds: apiResponseTimeoutSeconds));
 
       if (response.statusCode == 200) {
-        // log.w(
-        //     '[STRIPE API] ${stripeTestMode ? 'TEST' : ''} PRODUCT RETRIEVAL RESPONSE DATA: ${response.data}');
+        appLogger.f(
+            '[STRIPE API] ${testing ? 'TEST' : ''} PRODUCT RETRIEVAL RESPONSE DATA: ${response.body.toString()}');
 
         // log.d(
         //     '[STRIPE API] EXTRACTING ${stripeTestMode ? 'TEST' : ''} PRODUCTS FROM JSON');
