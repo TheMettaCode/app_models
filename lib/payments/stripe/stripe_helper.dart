@@ -103,6 +103,7 @@ class StripeHelper {
     required String appUserId,
     required GeneralPurchaserInfo purchaserInfo,
     required GeneralProductInfo productInfo,
+    required PriceCalculations initialPriceCalculations,
     String currency = "usd",
     bool stripePurchaseRequired = true,
   }) async {
@@ -154,6 +155,7 @@ class StripeHelper {
                     elevation: 0,
                     backgroundColor: Colors.transparent,
                     child: Card(
+                      color: Theme.of(context).colorScheme.primary,
                       child: Padding(
                         padding: const EdgeInsets.all(25),
                         child: Column(
@@ -1406,6 +1408,7 @@ class StripeHelper {
             retailPrice: productInfo.retailPrice,
             salePercentOff: productInfo.salePercentOff,
             defaultProductHandlingPrice: productInfo.defaultHandlingPrice,
+            shippingRequired: productInfo.shippingRequired,
             shippingPriceMultiplier: productInfo.defaultShippingMultiplier,
           );
 
@@ -1870,6 +1873,7 @@ class GeneralProductInfo {
   double? memberPercentOff;
   double defaultHandlingPrice;
   double defaultShippingMultiplier;
+  bool shippingRequired;
 
   GeneralProductInfo({
     required this.id,
@@ -1883,6 +1887,7 @@ class GeneralProductInfo {
     required this.memberPercentOff,
     required this.defaultHandlingPrice,
     required this.defaultShippingMultiplier,
+    required this.shippingRequired,
   });
 }
 
@@ -1977,6 +1982,7 @@ class PriceCalculations {
     required double? memberPercentOff,
     required double defaultProductHandlingPrice,
     required double shippingPriceMultiplier,
+    required bool shippingRequired,
   }) async {
     ///
     bool onSale = salePercentOff != null && salePercentOff > 0;
@@ -1987,8 +1993,9 @@ class PriceCalculations {
     double? memberPrice;
     // double finalBuyPrice = retailPrice;
     double totalPercentOff = 0;
-    double shippingPrice =
-        defaultProductHandlingPrice + (retailPrice * shippingPriceMultiplier);
+    double shippingPrice = shippingRequired
+        ? defaultProductHandlingPrice + (retailPrice * shippingPriceMultiplier)
+        : 0;
     double subtotal = retailPrice - (retailPrice * (totalPercentOff / 100));
     // double subtotal = finalBuyPrice - (finalBuyPrice * (totalPercentOff / 100));
     double totalForThisSale;
@@ -2037,8 +2044,7 @@ class PriceCalculations {
 
     ///
     appLogger.w(
-        // '[[ CALCULATE PRICES FUNCTION ]] RETAIL PRICE ==> \$$retailPrice\n[[ CALCULATE PRICES FUNCTION ]] IS FIRST PURCHASE? ==> $isFirstPurchase\n[[ CALCULATE PRICES FUNCTION ]] SALE PRICE ==> ${salePrice == null ? "Not on sale" : "\$$salePrice"}\n[[ CALCULATE PRICES FUNCTION ]] MEMBER PRICE ==> ${memberPrice == null ? "Not a member" : "\$$memberPrice"}\n[[ CALCULATE PRICES FUNCTION ]] FINAL BUY PRICE ==> \$$finalBuyPrice\n[[ CALCULATE PRICES FUNCTION ]] TOTAL %OFF ==> $totalPercentOff%\n[[ CALCULATE PRICES FUNCTION ]] SUBTOTAL ==> \$$subtotal\n[[ CALCULATE PRICES FUNCTION ]] SHIPPING PRICE ==> \$$shippingPrice\n[[ CALCULATE PRICES FUNCTION ]] TOTAL THIS SALE ==> \$$totalForThisSale');
-        '[[ CALCULATE PRICES FUNCTION ]] RETAIL PRICE ==> \$$retailPrice\n[[ CALCULATE PRICES FUNCTION ]] IS FIRST PURCHASE? ==> $isFirstPurchase\n[[ CALCULATE PRICES FUNCTION ]] SALE PRICE ==> ${salePrice == null ? "Not on sale" : "\$$salePrice"}\n[[ CALCULATE PRICES FUNCTION ]] MEMBER PRICE ==> ${memberPrice == null ? "Not a member" : "\$$memberPrice"}\n[[ CALCULATE PRICES FUNCTION ]] TOTAL %OFF ==> $totalPercentOff%\n[[ CALCULATE PRICES FUNCTION ]] SUBTOTAL ==> \$$subtotal\n[[ CALCULATE PRICES FUNCTION ]] SHIPPING PRICE ==> \$$shippingPrice\n[[ CALCULATE PRICES FUNCTION ]] TOTAL THIS SALE ==> \$$totalForThisSale');
+        '[[ CALCULATE PRICES FUNCTION ]] RETAIL PRICE ==> \$$retailPrice\n[[ CALCULATE PRICES FUNCTION ]] IS FIRST PURCHASE? ==> $isFirstPurchase\n[[ CALCULATE PRICES FUNCTION ]] SALE PRICE ==> ${salePrice == null ? "Not on sale" : "\$$salePrice"}\n[[ CALCULATE PRICES FUNCTION ]] MEMBER PRICE ==> ${memberPrice == null ? "Not a member" : "\$$memberPrice"}\n[[ CALCULATE PRICES FUNCTION ]] TOTAL %OFF ==> $totalPercentOff%\n[[ CALCULATE PRICES FUNCTION ]] SUBTOTAL ==> \$$subtotal\n[[ CALCULATE PRICES FUNCTION ]] SHIPPING REQUIRED ==> $shippingRequired\n[[ CALCULATE PRICES FUNCTION ]] SHIPPING PRICE ==> \$$shippingPrice\n[[ CALCULATE PRICES FUNCTION ]] TOTAL THIS SALE ==> \$$totalForThisSale');
 
     var priceCalculations = PriceCalculations(
         retailPrice: retailPrice,
@@ -2046,7 +2052,6 @@ class PriceCalculations {
         memberPrice: memberPrice,
         totalPercentOff: totalPercentOff,
         shippingPrice: shippingPrice,
-        // finalBuyPrice: finalBuyPrice,
         subtotal: subtotal,
         totalForThisSale: totalForThisSale);
 
