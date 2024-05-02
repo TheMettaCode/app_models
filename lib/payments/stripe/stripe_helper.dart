@@ -653,7 +653,7 @@ class StripeHelper {
     // Map<String, dynamic>? prouctMetadata,
     String? metadataCheckKey,
     String? metadataCheckValue,
-    List<String>? productIds,
+    // List<String>? productIds,
   }) async {
     appLogger.d('[STRIPE API GET ALL FUNCTION] FETCHING STRIPE PRODUCTS');
 
@@ -694,13 +694,17 @@ class StripeHelper {
     //   // }
     // }
 
-    // Try using the format `metadata[\"key\"]:\"value\"` to query for metadata or key:\"value\" to query for other fields.
+    String url =
+        'https://api.stripe.com/v1/products/search?query=active:"true"';
+
+    if (metadataCheckKey != null && metadataCheckValue != null) {
+      url =
+          'https://api.stripe.com/v1/products/search?query=active:"true" AND metadata["$metadataCheckKey"]:"$metadataCheckValue"';
+    }
 
     try {
       var response = await http.get(
-        Uri.parse(
-            'https://api.stripe.com/v1/products/search?query=active:\"true\" AND metadata[\"application\"]:\"scapegoats_music\"'),
-        // 'https://api.stripe.com/v1/products/search?query="active:\"true\" AND \'metadata[\"application\"]:\"scapegoats_music\"\'"'),
+        Uri.parse(url),
         headers: {
           'Authorization': 'Bearer $stripeSecretApiKey',
           'Content-Type': 'application/x-www-form-urlencoded'
