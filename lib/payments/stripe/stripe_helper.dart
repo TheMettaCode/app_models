@@ -697,7 +697,7 @@ class StripeHelper {
     try {
       var response = await http.get(
         Uri.parse(
-            'https://api.stripe.com/v1/products?active=true&metadata[application]=scapegoats_music'),
+            'https://api.stripe.com/v1/products?active=true&ids[]=\[\"${productIds?.first}\"\]'),
         headers: {
           'Authorization': 'Bearer $stripeSecretApiKey',
           'Content-Type': 'application/x-www-form-urlencoded'
