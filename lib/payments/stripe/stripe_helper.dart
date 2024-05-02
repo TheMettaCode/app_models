@@ -694,10 +694,12 @@ class StripeHelper {
     //   // }
     // }
 
+    // Try using the format `metadata[\"key\"]:\"value\"` to query for metadata or key:\"value\" to query for other fields.
+
     try {
       var response = await http.get(
         Uri.parse(
-            'https://api.stripe.com/v1/products/search?query="active:\'true\' AND metadata[\'application\']:\'scapegoats_music\'"'),
+            'https://api.stripe.com/v1/products/search?query="active:\"true\" AND metadata[\"application\"]:\"scapegoats_music\""'),
         headers: {
           'Authorization': 'Bearer $stripeSecretApiKey',
           'Content-Type': 'application/x-www-form-urlencoded'
