@@ -677,7 +677,7 @@ class StripeHelper {
     // };
 
     Map<String, String> data = {
-      // "active": "true"
+      "active": "true",
       "metadata[application]": "scapegoats_music"
     };
 
@@ -697,7 +697,7 @@ class StripeHelper {
     try {
       var response = await http
           .post(
-            Uri.parse('https://api.stripe.com/v1/products?active=true'),
+            Uri.parse('https://api.stripe.com/v1/products'),
             headers: {
               'Authorization': 'Bearer $stripeSecretApiKey',
               'Content-Type': 'application/x-www-form-urlencoded'
