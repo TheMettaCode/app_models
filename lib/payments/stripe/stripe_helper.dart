@@ -650,8 +650,7 @@ class StripeHelper {
   static Future<List<StripeProduct>> getMultipleStripeProducts({
     required StripeSecrets secrets,
     required bool testing,
-    String? metadataCheckKey,
-    String? metadataCheckValue,
+    (String, String)? metadataKeyAndValue,
     bool activeProducts = true,
   }) async {
     appLogger.d('[STRIPE API GET ALL FUNCTION] FETCHING STRIPE PRODUCTS');
@@ -665,9 +664,9 @@ class StripeHelper {
     String url =
         'https://api.stripe.com/v1/products/search?query=active:"$activeProducts"';
 
-    if (metadataCheckKey != null && metadataCheckValue != null) {
+    if (metadataKeyAndValue != null) {
       url =
-          'https://api.stripe.com/v1/products/search?query=active:"$activeProducts" AND metadata["$metadataCheckKey"]:"$metadataCheckValue"';
+          'https://api.stripe.com/v1/products/search?query=active:"$activeProducts" AND metadata["${metadataKeyAndValue.$1}"]:"${metadataKeyAndValue.$2}"';
     }
 
     try {
@@ -686,14 +685,14 @@ class StripeHelper {
 
         final stripeProductsList = stripeProductsListFromJson(response.body);
 
-        if (metadataCheckKey != null && metadataCheckValue != null) {
-          finalProductsList = stripeProductsList.products
-              .where((element) =>
-                  element.metadata?[metadataCheckKey] == metadataCheckValue)
-              .toList();
-        } else {
-          finalProductsList = stripeProductsList.products;
-        }
+        finalProductsList = stripeProductsList.products;
+        // if (metadataKeyAndValue != null) {
+        //   finalProductsList = stripeProductsList.products
+        //       .where((element) =>
+        //           element.metadata?[metadataKeyAndValue.$1] ==
+        //           metadataKeyAndValue.$2)
+        //       .toList();
+        // }
       } else {
         appLogger.d(
             '[STRIPE API] STRIPE ${testing ? 'TEST' : ''} PRODUCTS API ERROR: STATUS CODE = ${response.body.toString()}');
