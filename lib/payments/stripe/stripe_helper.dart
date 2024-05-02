@@ -660,8 +660,8 @@ class StripeHelper {
     // final bool devFlagActive = developerNotifier.value;
     // final bool stripeTestMode = devFlagActive;
 
-    // final String stripeSecretApiKey =
-    //     testing ? secrets.secretTestKey : secrets.secretKey;
+    final String stripeSecretApiKey =
+        testing ? secrets.secretTestKey : secrets.secretKey;
 
     // List<StripeProduct> currentStripeProductsList = [];
     List<StripeProduct> finalProductsList = [];
@@ -676,7 +676,7 @@ class StripeHelper {
     //   HttpHeaders.authorizationHeader: "Bearer $stripeSecretApiKey",
     // };
 
-    Map<String, dynamic> data = {
+    Map<String, String> data = {
       "active": "true"
       // "metadata[application]": "scapegoats_music"
     };
@@ -695,18 +695,15 @@ class StripeHelper {
     // }
 
     try {
-      var response = await http
-          .post(
-            Uri.parse('https://api.stripe.com/v1/products'),
-            headers: {
-              'Authorization':
-                  'Bearer ${testing ? secrets.secretTestKey : secrets.secretKey}',
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: data,
-            // body: jsonEncode(data),
-          )
-          .timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
+      var response = await http.get(
+        Uri.parse('https://api.stripe.com/v1/products?active=true'),
+        headers: {
+          'Authorization': 'Bearer $stripeSecretApiKey',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        // body: data,
+        // body: jsonEncode(data),
+      ).timeout(const Duration(seconds: appApiResponseTimeoutSeconds));
 
       // final response = await dio
       //     .get(productListUrl,
