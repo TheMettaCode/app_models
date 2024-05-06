@@ -169,9 +169,11 @@ class StripeHelper {
                                   color:
                                       Theme.of(context).colorScheme.onPrimary),
                             ),
-                            const Padding(
-                              padding: EdgeInsets.all(10),
-                              child: CircularProgressIndicator(),
+                            Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: CircularProgressIndicator(
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary),
                             ),
                             ElevatedButton(
                                 onPressed: () => Navigator.pop(context),
