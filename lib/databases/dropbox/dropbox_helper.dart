@@ -179,7 +179,9 @@ class DropboxHelper {
 
           ///
           dropboxUrl = linkUrl;
-          raw1Url = linkUrl.replaceFirst("&dl=0", "&raw=1");
+          raw1Url = linkUrl
+              .replaceFirst("www.dropbox.com", "dl.dropboxusercontent.com")
+              .replaceFirst("&dl=0", "&raw=1");
 
           appLogger.d(
               "[[ DROPBOX HELPER :: UPLOAD IMAGE ]] IMAGE FILE LINKS TO RETURN... RETRIEVED URL: $dropboxUrl, RAW=1 URL: $raw1Url");

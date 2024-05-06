@@ -995,22 +995,24 @@ class StripeHelper {
 
     /// CHECK FOR SHIPPING ID
     String? shippingId;
-    appLogger.d(
-        '[STRIPE API CREATE PAYMENT LINK] CREATING STRIPE ${testing ? 'TEST' : ''} SHIPPING ID');
-    await _getStripeProductShippingPrice(
-      secrets: secrets,
-      testing: testing,
-      productInfo: productInfo,
-    ).then((newShippingId) {
-      shippingId = newShippingId?.id;
-    });
+    if (productInfo.shippingRequired) {
+      appLogger.d(
+          '[STRIPE API CREATE PAYMENT LINK] CREATING STRIPE ${testing ? 'TEST' : ''} SHIPPING ID');
+      await _getStripeProductShippingPrice(
+        secrets: secrets,
+        testing: testing,
+        productInfo: productInfo,
+      ).then((newShippingId) {
+        shippingId = newShippingId?.id;
+      });
+    }
 
     /// CREATE PURCHASE PAYMENT LINK
-    if (shippingId != null && priceId != null) {
+    if (priceId != null) {
       final body = <String, String>{
         "line_items[0][price]": priceId!,
         "line_items[0][quantity]": "1",
-        "shipping_options[0][shipping_rate]": shippingId!,
+
         "billing_address_collection": "required",
         // "shipping_address_collection[allowed_countries][0]": "US",
         //? "shipping_address_collection[allowed_countries][1]": "CA",
@@ -1027,18 +1029,23 @@ class StripeHelper {
             productInfo.orderOptions ?? "No options for this order",
       };
 
-      if (productInfo.shipToRegions.isNotEmpty) {
-        var regions = productInfo.shipToRegions;
-        for (var i = 0; i < regions.length; i++) {
-          body.addAll({
-            "shipping_address_collection[allowed_countries][$i]":
-                // ignore: unnecessary_string_interpolations
-                "${regions[i].toUpperCase()}"
-          });
+      if (shippingId != null) {
+        ///
+        body.addAll({"shipping_options[0][shipping_rate]": shippingId!});
+        if (productInfo.shipToRegions.isNotEmpty) {
+          ///
+          var regions = productInfo.shipToRegions;
+          for (var i = 0; i < regions.length; i++) {
+            body.addAll({
+              "shipping_address_collection[allowed_countries][$i]":
+                  // ignore: unnecessary_string_interpolations
+                  "${regions[i].toUpperCase()}"
+            });
+          }
+        } else {
+          body.addAll(
+              {"shipping_address_collection[allowed_countries][0]": "US"});
         }
-      } else {
-        body.addAll(
-            {"shipping_address_collection[allowed_countries][0]": "US"});
       }
 
       final paymentLinkResponse = await http
