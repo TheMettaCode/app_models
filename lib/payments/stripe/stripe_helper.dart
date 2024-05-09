@@ -559,7 +559,7 @@ class StripeHelper {
             "metadata[app_user_id]": purchaserInfo.applicationUid,
           };
 
-          if (purchaserInfo.email.isEmpty) {
+          if (purchaserInfo.email.isNotEmpty) {
             body.addAll({"email": purchaserInfo.email});
           }
 
@@ -654,7 +654,7 @@ class StripeHelper {
   static Future<List<StripeProduct>> getMultipleStripeProducts({
     required StripeSecrets secrets,
     required bool testing,
-    (String, String)? metadataKeyAndValue,
+    String? applicationNameTag,
     bool activeProducts = true,
   }) async {
     appLogger.d('[STRIPE API GET ALL FUNCTION] FETCHING STRIPE PRODUCTS');
@@ -667,9 +667,9 @@ class StripeHelper {
     String url =
         'https://api.stripe.com/v1/products/search?query=active:"$activeProducts"';
 
-    if (metadataKeyAndValue != null) {
+    if (applicationNameTag != null) {
       url =
-          'https://api.stripe.com/v1/products/search?query=active:"$activeProducts" AND metadata["${metadataKeyAndValue.$1}"]:"${metadataKeyAndValue.$2}"';
+          'https://api.stripe.com/v1/products/search?query=active:"$activeProducts" AND metadata["application"]:"$applicationNameTag"';
     }
 
     try {
@@ -711,7 +711,7 @@ class StripeHelper {
     return finalProductsList;
   }
 
-  static Future<StripeProduct?> _getExistingStripeProduct({
+  static Future<StripeProduct?> getExistingStripeProduct({
     required StripeSecrets secrets,
     required bool testing,
     required String productId,
@@ -750,11 +750,13 @@ class StripeHelper {
     return existingProduct;
   }
 
-  static Future<List<StripeProduct?>> _createStripeProduct({
+  static Future<List<StripeProduct?>> createStripeProduct({
     required StripeSecrets secrets,
     required bool testing,
     required GeneralProductInfo productInfo,
-    PriceCalculations? priceCalculations,
+    required String statementDescriptor,
+    String unitLabel = "pc",
+    Map<String, String>? metadata,
   }) async {
     StripeProduct? stripeLiveProduct;
     StripeProduct? stripeTestProduct;
@@ -763,29 +765,22 @@ class StripeHelper {
           '[[ STRIPE API CREATE PRODUCT ]] ATTEMPTING TO CREATE${testing ? ' TEST' : ''} PRODUCT');
 
       //Request body
-      Map<String, dynamic> body = {
+      Map<String, String> body = {
         "id": productInfo.id,
-        // "id": product.id,
         "name": productInfo.title,
-        // "name": product.title,
         "description": productInfo.description,
-        // "features": product.otherAttributes,
         "default_price_data[currency]": "usd",
         "default_price_data[unit_amount_decimal]":
-            // priceCalculations == null
-            //     ?
-            "${(productInfo.retailPrice * 100).truncate()}"
-        // : "${(priceCalculations.finalBuyPrice * 100).truncate()}"
-        ,
-        // "${(product.retailPrice * 100).truncate()}",
-        "shippable": "true",
-        "unit_label": "pc",
-        "statement_descriptor": "SCAPEGOATS",
+            "${(productInfo.defaultRetailPrice * 100).truncate()}",
+        "shippable": "${productInfo.shippingRequired}",
+        "unit_label": unitLabel,
+        "statement_descriptor": statementDescriptor,
         "images[0]": productInfo.imageUrls.first,
-        // "metadata[cost_string]": "${(product.cost * 100).toInt()}",
-        // "metadata[retail_price_string]":
-        //     "${(product.retailPrice * 100).toInt()}",
       };
+
+      if (metadata != null) {
+        body.addAll(metadata);
+      }
 
       /// CREATE LIVE STRIPE PRODUCT
       var response = await http
@@ -1028,7 +1023,7 @@ class StripeHelper {
         "metadata[app_user_id]": appUserId,
         // "metadata[app_user_id]": appUser.appUserId,
         "metadata[order_options]":
-            productInfo.orderOptions ?? "No options for this order",
+            productInfo.orderOptions?.join(", ") ?? "No options for this order",
       };
 
       if (shippingId != null) {
@@ -1115,7 +1110,8 @@ class StripeHelper {
   }) async {
     StripeShippingPrice? finalShippingId;
     double shippingAndHandling = productInfo.defaultHandlingPrice +
-        (productInfo.retailPrice * productInfo.defaultShippingMultiplier);
+        (productInfo.defaultRetailPrice *
+            productInfo.defaultShippingMultiplier);
 
     /// Check for existing price
     try {
@@ -1414,7 +1410,7 @@ class StripeHelper {
             isFirstPurchase: isFirstPurchase,
             memberLoggedIn: memberLoggedIn,
             memberPercentOff: memberPercentOff,
-            retailPrice: productInfo.retailPrice,
+            retailPrice: productInfo.defaultRetailPrice,
             salePercentOff: productInfo.salePercentOff,
             defaultProductHandlingPrice: productInfo.defaultHandlingPrice,
             shippingRequired: productInfo.shippingRequired,
@@ -1874,15 +1870,15 @@ class GeneralProductInfo {
   String id;
   String title;
   String description;
-  String? orderOptions;
+  List<String>? orderOptions;
+  bool shippingRequired;
   List<String> shipToRegions;
   List<String> imageUrls;
-  double retailPrice;
+  double defaultRetailPrice;
   double? salePercentOff;
   double? memberPercentOff;
   double defaultHandlingPrice;
   double defaultShippingMultiplier;
-  bool shippingRequired;
 
   GeneralProductInfo({
     required this.id,
@@ -1891,7 +1887,7 @@ class GeneralProductInfo {
     required this.orderOptions,
     required this.shipToRegions,
     required this.imageUrls,
-    required this.retailPrice,
+    required this.defaultRetailPrice,
     required this.salePercentOff,
     required this.memberPercentOff,
     required this.defaultHandlingPrice,
