@@ -1972,7 +1972,7 @@ class PriceCalculations {
   toString() => toGSheetsList().join(stripePriceCalculationsDelimiter);
 
   toDisplayString() =>
-      "Retail Price: \$${retailPrice.toStringAsFixed(2)}  Discount: ${totalPercentOff.round()}%  Shipping: \$${shippingPrice.toStringAsFixed(2)}";
+      "Retail Price: \$${retailPrice.toStringAsFixed(2)}  Discount: ${totalPercentOff.round()}%  S&H: \$${shippingPrice.toStringAsFixed(2)}";
   // "Buy Price: \$${finalBuyPrice.toStringAsFixed(2)}  Discount: ${totalPercentOff.round()}%  Shipping: \$${shippingPrice.toStringAsFixed(2)}";
 
   factory PriceCalculations.fromString(String string) =>
