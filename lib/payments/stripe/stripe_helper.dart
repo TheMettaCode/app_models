@@ -755,6 +755,7 @@ class StripeHelper {
     required bool testing,
     required GeneralProductInfo productInfo,
     required String statementDescriptor,
+    required String applicationNameTag,
     String unitLabel = "pc",
     Map<String, String>? metadata,
   }) async {
@@ -776,6 +777,7 @@ class StripeHelper {
         "unit_label": unitLabel,
         "statement_descriptor": statementDescriptor,
         "images[0]": productInfo.imageUrls.first,
+        "metadata[application]": applicationNameTag,
       };
 
       if (metadata != null) {
