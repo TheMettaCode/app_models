@@ -1621,7 +1621,7 @@ class StripeHelper {
     required StripeSecrets secrets,
     required bool testing,
     required Coupon coupon,
-    StripeCustomer? customer,
+    // StripeCustomer? customer,
   }) async {
     PromoCode? promotionCode;
 
